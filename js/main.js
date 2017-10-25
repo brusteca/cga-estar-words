@@ -1,6 +1,10 @@
 const canvas = document.getElementById('glCanvas');
 const gl = canvas.getContext('webgl');
 
+const v3 = twgl.v3;
+const m3 = twgl.m3;
+const m4 = twgl.m4;
+
 
 function initialize() {
 	// Only continue if WebGL is available and working
