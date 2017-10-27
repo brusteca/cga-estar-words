@@ -5,139 +5,464 @@ const v3 = twgl.v3;
 const m3 = twgl.m3;
 const m4 = twgl.m4;
 
+let cameraAngleRadians = degreesToRadians(0);
+let fieldOfViewRadians = degreesToRadians(60);
 
-function initialize() {
+function main() {
 	// Only continue if WebGL is available and working
 	if (!gl) {
 		alert("Unable to initialize WebGL. Your browser or machine may not support it.");
 		return;
 	}
 	// Set clear color to black, fully opaque
-	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.clearColor(1.0, 1.0, 1.0, 1.0);
 	// Clear the color buffer with specified clear color
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
+	// setup GLSL program
+    let program = twgl.createProgramFromScripts(gl, ["3d-vertex-shader", "3d-fragment-shader"]);
 
-	// https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
-	let vertexShaderSource = document.getElementById("2d-vertex-shader").text;
-	let fragmentShaderSource = document.getElementById("2d-fragment-shader").text;
+	// look up where the vertex data needs to go.
+    let positionLocation = gl.getAttribLocation(program, "a_position");
+    let colorLocation = gl.getAttribLocation(program, "a_color");
 
-	let vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-	let fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+	// lookup uniforms
+    let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
-	let program = createProgram(gl, vertexShader, fragmentShader);
+	// Create a buffer to put positions in
+    let positionBuffer = gl.createBuffer();
+    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    // Put geometry data into buffer
+    setGeometry(gl);
 
-	let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+	// Create a buffer to put colors in
+    let colorBuffer = gl.createBuffer();
+    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = colorBuffer)
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    // Put color data into buffer
+    setColors(gl);
 
-	// fast fix to get this working
-	window.shaderProgram = program;
-	window.positionAttributeLocation = positionAttributeLocation;
+	let lastFrameTimeMs = 0;
+	let elapsedTime = 0;
 
-	let positionBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+	console.log("interval id:", setInterval(()=> {cameraAngleRadians = degreesToRadians( radiansToDegrees(cameraAngleRadians) + 0.3)}, 16))
 
-	window.positionBuffer = positionBuffer;
+	requestAnimationFrame(mainLoop)
 
-	// three 2d points
-	let positions = [
-	  0, 0,
-	  0, 0.5,
-	  0.7, 0,
-	];
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+	function mainLoop(timestamp) {
+
+		let delta = timestamp - lastFrameTimeMs;
+		lastFrameTimeMs = timestamp;
+
+		// update(deltaInSeconds, elapsedTime);
+	    draw();
+	    requestAnimationFrame(mainLoop);
+	}
+
+	function draw() {
+		twgl.resizeCanvasToDisplaySize(gl.canvas);
+
+	    // Tell WebGL how to convert from clip space to pixels
+	    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+	    // Clear the canvas AND the depth buffer.
+	    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+	    // Turn on culling. By default backfacing triangles
+	    // will be culled.
+	    gl.enable(gl.CULL_FACE);
+
+	    // Enable the depth buffer
+	    gl.enable(gl.DEPTH_TEST);
+
+	    // Tell it to use our program (pair of shaders)
+	    gl.useProgram(program);
+
+	    // Turn on the position attribute
+	    gl.enableVertexAttribArray(positionLocation);
+
+	    // Bind the position buffer.
+	    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+	    // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+	    var size = 3;          // 3 components per iteration
+	    var type = gl.FLOAT;   // the data is 32bit floats
+	    var normalize = false; // don't normalize the data
+	    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+	    var offset = 0;        // start at the beginning of the buffer
+	    gl.vertexAttribPointer(
+	        positionLocation, size, type, normalize, stride, offset)
+
+	    // Turn on the color attribute
+	    gl.enableVertexAttribArray(colorLocation);
+
+	    // Bind the color buffer.
+	    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+
+	    // Tell the attribute how to get data out of colorBuffer (ARRAY_BUFFER)
+	    var size = 3;                 // 3 components per iteration
+	    var type = gl.UNSIGNED_BYTE;  // the data is 8bit unsigned values
+	    var normalize = true;         // normalize the data (convert from 0-255 to 0-1)
+	    var stride = 0;               // 0 = move forward size * sizeof(type) each iteration to get the next position
+	    var offset = 0;               // start at the beginning of the buffer
+	    gl.vertexAttribPointer(
+	        colorLocation, size, type, normalize, stride, offset)
+
+
+	    var numFs = 8;
+	    var radius = 200;
+
+	    // Compute the projection matrix
+	    var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+	    var zNear = 1;
+	    var zFar = 2000;
+	    var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+
+	    // Compute the position of the first F
+	    var fPosition = [radius, 0, 0];
+
+	    // Use matrix math to compute a position on a circle where
+	    // the camera is
+	    var cameraMatrix = m4.rotationY(cameraAngleRadians);
+	    cameraMatrix = m4.translate(cameraMatrix, v3.create(0, 0, radius * 1.5));
+
+	    // Get the camera's postion from the matrix we computed
+	    var cameraPosition = [
+	      cameraMatrix[12],
+	      cameraMatrix[13],
+	      cameraMatrix[14],
+	    ];
+
+	    var up = [0, 1, 0];
+
+	    // Compute the camera's matrix using look at.
+	    var cameraMatrix = m4.lookAt(cameraPosition, fPosition, up);
+
+	    // Make a view matrix from the camera matrix
+	    var viewMatrix = m4.inverse(cameraMatrix);
+
+	    // Compute a view projection matrix
+	    var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+
+	    for (var ii = 0; ii < numFs; ++ii) {
+	      var angle = ii * Math.PI * 2 / numFs;
+	      var x = Math.cos(angle) * radius;
+	      var y = Math.sin(angle) * radius
+
+	      // starting with the view projection matrix
+	      // compute a matrix for the F
+	      var matrix = m4.translate(viewProjectionMatrix, v3.create(x, 0, y));
+
+	      // Set the matrix.
+	      gl.uniformMatrix4fv(matrixLocation, false, matrix);
+
+	      // Draw the geometry.
+	      var primitiveType = gl.TRIANGLES;
+	      var offset = 0;
+	      var count = 16 * 6;
+	      gl.drawArrays(primitiveType, offset, count);
+	    }
+	}
+
+	function update(delta, elapsedTime){
+
+	}
 }
 
-let lastFrameTimeMs = 0;
-let elapsedTime = 0;
 
-function mainLoop(timestamp) {
+// Fill the buffer with the values that define a letter 'F'.
+function setGeometry(gl) {
+  var positions = new Float32Array([
+          // left column front
+          0,   0,  0,
+          0, 150,  0,
+          30,   0,  0,
+          0, 150,  0,
+          30, 150,  0,
+          30,   0,  0,
 
-	let delta = timestamp - lastFrameTimeMs;
-	lastFrameTimeMs = timestamp;
+          // top rung front
+          30,   0,  0,
+          30,  30,  0,
+          100,   0,  0,
+          30,  30,  0,
+          100,  30,  0,
+          100,   0,  0,
 
-	// update(deltaInSeconds, elapsedTime);
-    draw();
-    requestAnimationFrame(mainLoop);
-}
+          // middle rung front
+          30,  60,  0,
+          30,  90,  0,
+          67,  60,  0,
+          30,  90,  0,
+          67,  90,  0,
+          67,  60,  0,
 
+          // left column back
+            0,   0,  30,
+           30,   0,  30,
+            0, 150,  30,
+            0, 150,  30,
+           30,   0,  30,
+           30, 150,  30,
 
-function update(delta, elapsedTime){
+          // top rung back
+           30,   0,  30,
+          100,   0,  30,
+           30,  30,  30,
+           30,  30,  30,
+          100,   0,  30,
+          100,  30,  30,
 
-}
+          // middle rung back
+           30,  60,  30,
+           67,  60,  30,
+           30,  90,  30,
+           30,  90,  30,
+           67,  60,  30,
+           67,  90,  30,
 
-function draw() {
-	resizeCanvasToDisplaySize(gl.canvas);
-	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-	gl.clearColor(0, 0, 0, 0);
-	gl.clear(gl.COLOR_BUFFER_BIT);
+          // top
+            0,   0,   0,
+          100,   0,   0,
+          100,   0,  30,
+            0,   0,   0,
+          100,   0,  30,
+            0,   0,  30,
 
-	// Tell it to use our program (pair of shaders)
-	let program = window.shaderProgram;
-	gl.useProgram(program);
+          // top rung right
+          100,   0,   0,
+          100,  30,   0,
+          100,  30,  30,
+          100,   0,   0,
+          100,  30,  30,
+          100,   0,  30,
 
-	let positionAttributeLocation = window.positionAttributeLocation;
-	gl.enableVertexAttribArray(positionAttributeLocation);
+          // under top rung
+          30,   30,   0,
+          30,   30,  30,
+          100,  30,  30,
+          30,   30,   0,
+          100,  30,  30,
+          100,  30,   0,
 
-	let positionBuffer = window.positionBuffer;
-	// Bind the position buffer.
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+          // between top rung and middle
+          30,   30,   0,
+          30,   60,  30,
+          30,   30,  30,
+          30,   30,   0,
+          30,   60,   0,
+          30,   60,  30,
 
-	// Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-	let size = 2;          // 2 components per iteration
-	let type = gl.FLOAT;   // the data is 32bit floats
-	let normalize = false; // don't normalize the data
-	let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-	let offset = 0;        // start at the beginning of the buffer
-	gl.vertexAttribPointer(
-		positionAttributeLocation, size, type, normalize, stride, offset)
+          // top of middle rung
+          30,   60,   0,
+          67,   60,  30,
+          30,   60,  30,
+          30,   60,   0,
+          67,   60,   0,
+          67,   60,  30,
 
-	let primitiveType = gl.TRIANGLES;
-    offset = 0;
-    let count = 3;
-    gl.drawArrays(primitiveType, offset, count);
-}
+          // right of middle rung
+          67,   60,   0,
+          67,   90,  30,
+          67,   60,  30,
+          67,   60,   0,
+          67,   90,   0,
+          67,   90,  30,
 
-// stuff copied from the tutorial
-// https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
+          // bottom of middle rung.
+          30,   90,   0,
+          30,   90,  30,
+          67,   90,  30,
+          30,   90,   0,
+          67,   90,  30,
+          67,   90,   0,
 
-function createShader(gl, type, source) {
-  let shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  let success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-  if (success) {
-	return shader;
+          // right of bottom
+          30,   90,   0,
+          30,  150,  30,
+          30,   90,  30,
+          30,   90,   0,
+          30,  150,   0,
+          30,  150,  30,
+
+          // bottom
+          0,   150,   0,
+          0,   150,  30,
+          30,  150,  30,
+          0,   150,   0,
+          30,  150,  30,
+          30,  150,   0,
+
+          // left side
+          0,   0,   0,
+          0,   0,  30,
+          0, 150,  30,
+          0,   0,   0,
+          0, 150,  30,
+          0, 150,   0]);
+
+  // Center the F around the origin and Flip it around. We do this because
+  // we're in 3D now with and +Y is up where as before when we started with 2D
+  // we had +Y as down.
+
+  // We could do by changing all the values above but I'm lazy.
+  // We could also do it with a matrix at draw time but you should
+  // never do stuff at draw time if you can do it at init time.
+  var matrix = m4.rotationX(Math.PI),
+  matrix = m4.translate(matrix, v3.create(-50, -75, -15));
+
+  function vectorMultiply(v, m) {
+	var dst = [];
+	for (var i = 0; i < 4; ++i) {
+	  dst[i] = 0.0;
+	  for (var j = 0; j < 4; ++j)
+		dst[i] += v[j] * m[j * 4 + i];
+	}
+	return dst;
   }
 
-  console.log(gl.getShaderInfoLog(shader));
-  gl.deleteShader(shader);
-}
-
-function createProgram(gl, vertexShader, fragmentShader) {
-  let program = gl.createProgram();
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  let success = gl.getProgramParameter(program, gl.LINK_STATUS);
-  if (success) {
-	return program;
+  for (var ii = 0; ii < positions.length; ii += 3) {
+    var vector = vectorMultiply([positions[ii + 0], positions[ii + 1], positions[ii + 2], 1], matrix);
+    positions[ii + 0] = vector[0];
+    positions[ii + 1] = vector[1];
+    positions[ii + 2] = vector[2];
   }
 
-  console.log(gl.getProgramInfoLog(program));
-  gl.deleteProgram(program);
+  gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 }
 
-function resizeCanvasToDisplaySize(canvas) {
-  // Lookup the size the browser is displaying the canvas.
-  let displayWidth  = canvas.clientWidth;
-  let displayHeight = canvas.clientHeight;
+// Fill the buffer with colors for the 'F'.
+function setColors(gl) {
+  gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Uint8Array([
+          // left column front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
 
-  // Check if the canvas is not the same size.
-  if (canvas.width  != displayWidth ||
-	  canvas.height != displayHeight) {
+          // top rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
 
-	// Make the canvas the same size
-	canvas.width  = displayWidth;
-	canvas.height = displayHeight;
-  }
+          // middle rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+
+          // left column back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+          // top rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+          // middle rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+          // top
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+
+          // top rung right
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+
+          // under top rung
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+
+          // between top rung and middle
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+
+          // top of middle rung
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+
+          // right of middle rung
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+
+          // bottom of middle rung.
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+
+          // right of bottom
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+
+          // bottom
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+
+          // left side
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220]),
+      gl.STATIC_DRAW);
 }
