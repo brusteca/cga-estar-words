@@ -7,13 +7,7 @@ class GameObject {
 		// todo junto o algo asi. tipo como parametro
 
 		// setup GLSL program
-		this.program = twgl.createProgramFromScripts(gl, ["3d-vertex-shader", "3d-fragment-shader"]);
-		// look up where the vertex data needs to go.
-	    this.positionLocation = gl.getAttribLocation(this.program, "a_position");
-	    this.colorLocation = gl.getAttribLocation(this.program, "a_color");
-
-		// lookup uniforms
-		this.matrixLocation = gl.getUniformLocation(this.program, "u_matrix");
+		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"])
 
 		// Create a buffer to put positions in
 		this.positionBuffer = gl.createBuffer();
@@ -38,10 +32,11 @@ class GameObject {
 
 	draw(viewProjectionMatrix) {
 		// Tell it to use our program (pair of shaders)
-		gl.useProgram(this.program);
+		gl.useProgram(this.programInfo.program);
 
 		// Turn on the position attribute
-		gl.enableVertexAttribArray(this.positionLocation);
+		gl.enableVertexAttribArray(
+			this.programInfo.attribSetters.a_position.location);
 
 		// Bind the position buffer.
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
@@ -53,11 +48,11 @@ class GameObject {
 		let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
 		let offset = 0;        // start at the beginning of the buffer
 		gl.vertexAttribPointer(
-			this.positionLocation, size, type,
+			this.programInfo.attribSetters.a_position.location, size, type,
 			normalize, stride, offset)
 
 		// Turn on the color attribute
-		gl.enableVertexAttribArray(this.colorLocation);
+		gl.enableVertexAttribArray(this.programInfo.attribSetters.a_color.location);
 
 		// Bind the color buffer.
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
@@ -69,7 +64,7 @@ class GameObject {
 		stride = 0;               // 0 = move forward size * sizeof(type) each iteration to get the next position
 		offset = 0;               // start at the beginning of the buffer
 		gl.vertexAttribPointer(
-			this.colorLocation, size, type,
+			this.programInfo.attribSetters.a_color.location, size, type,
 			normalize, stride, offset)
 
 		// Apply the transform to the viewMatrix
@@ -89,7 +84,7 @@ class GameObject {
 			let matrix = m4.translate(currentTransformMatrix, v3.create(x, 0, y));
 
 			// Set the matrix.
-			gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
+			gl.uniformMatrix4fv(this.programInfo.uniformSetters.u_matrix.location, false, matrix);
 
 			// Draw the geometry.
 			let primitiveType = gl.TRIANGLES;
