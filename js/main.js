@@ -38,7 +38,7 @@ function main() {
 		let x = Math.cos(angle) * radius;
 		let y = Math.sin(angle) * radius;
 
-		world.gameObjects.push(new GameObject(new Transform(
+		world.gameObjects.push(new Efe(new Transform(
 			v3.add(center, v3.create(x, 0, y))
 		)));
 	}
