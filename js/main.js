@@ -25,9 +25,24 @@ function main() {
 
 	let world = new World();
 
-	world.gameObjects.push(new GameObject(new Transform(
-		v3.create(1, 1, 1)
-	)));
+	// world.gameObjects.push(new GameObject(new Transform(
+	// 	v3.create(1, 1, 1)
+	// )));
+
+	let numFs = 8;
+	let radius = 200;
+	let center = v3.create(1,1,1);
+
+	for (let ii = 0; ii < numFs; ++ii) {
+		let angle = ii * Math.PI * 2 / numFs;
+		let x = Math.cos(angle) * radius;
+		let y = Math.sin(angle) * radius;
+
+		world.gameObjects.push(new GameObject(new Transform(
+			v3.add(center, v3.create(x, 0, y))
+		)));
+	}
+
 
 	requestAnimationFrame(initLoop)
 

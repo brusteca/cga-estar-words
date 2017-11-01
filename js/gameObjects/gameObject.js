@@ -9,20 +9,12 @@ class GameObject {
 		// setup GLSL program
 		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"])
 
-		// Create a buffer to put positions in
-		this.positionBuffer = gl.createBuffer();
-		// Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-		// Put geometry data into buffer
-		setGeometry(gl);
+		let arrays = {
+			a_position: {numComponents: 3, data: getGeometry(gl)},
+			a_color: {numComponents: 3, data: getColors(gl)}
+		};
 
-		// Create a buffer to put colors in
-		this.colorBuffer = gl.createBuffer();
-		// Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = colorBuffer)
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-		// Put color data into buffer
-		setColors(gl);
-
+		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
 	}
 
@@ -33,71 +25,36 @@ class GameObject {
 	draw(viewProjectionMatrix) {
 		// Tell it to use our program (pair of shaders)
 		gl.useProgram(this.programInfo.program);
-
-		// Turn on the position attribute
-		gl.enableVertexAttribArray(
-			this.programInfo.attribSetters.a_position.location);
-
-		// Bind the position buffer.
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-
-		// Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-		let size = 3;          // 3 components per iteration
-		let type = gl.FLOAT;   // the data is 32bit floats
-		let normalize = false; // don't normalize the data
-		let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-		let offset = 0;        // start at the beginning of the buffer
-		gl.vertexAttribPointer(
-			this.programInfo.attribSetters.a_position.location, size, type,
-			normalize, stride, offset)
-
-		// Turn on the color attribute
-		gl.enableVertexAttribArray(this.programInfo.attribSetters.a_color.location);
-
-		// Bind the color buffer.
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-
-		// Tell the attribute how to get data out of colorBuffer (ARRAY_BUFFER)
-		size = 3;                 // 3 components per iteration
-		type = gl.UNSIGNED_BYTE;  // the data is 8bit unsigned values
-		normalize = true;         // normalize the data (convert from 0-255 to 0-1)
-		stride = 0;               // 0 = move forward size * sizeof(type) each iteration to get the next position
-		offset = 0;               // start at the beginning of the buffer
-		gl.vertexAttribPointer(
-			this.programInfo.attribSetters.a_color.location, size, type,
-			normalize, stride, offset)
+		// Bind all the buffers and attributes of the program
+		twgl.setBuffersAndAttributes(
+			gl, this.programInfo, this.bufferInfo);
 
 		// Apply the transform to the viewMatrix
 		let currentTransformMatrix = m4.multiply(
 			viewProjectionMatrix, this.transform.transformMatrix);
 
-		let numFs = 8;
-		let radius = 200;
+		// here you set all the uniforms for the shaders
+		let uniforms = {
+			u_matrix: currentTransformMatrix
+		};
+		twgl.setUniforms(this.programInfo, uniforms)
+		// the code above does the same as the commented code below
+		// gl.uniformMatrix4fv(
+		// 	this.programInfo.uniformSetters.u_matrix.location,
+		// 	false,
+		// 	currentTransformMatrix
+		// );
 
-		for (let ii = 0; ii < numFs; ++ii) {
-			let angle = ii * Math.PI * 2 / numFs;
-			let x = Math.cos(angle) * radius;
-			let y = Math.sin(angle) * radius
-
-			// starting with the view projection matrix
-			// compute a matrix for the F
-			let matrix = m4.translate(currentTransformMatrix, v3.create(x, 0, y));
-
-			// Set the matrix.
-			gl.uniformMatrix4fv(this.programInfo.uniformSetters.u_matrix.location, false, matrix);
-
-			// Draw the geometry.
-			let primitiveType = gl.TRIANGLES;
-			let offset = 0;
-			let count = 16 * 6;
-			gl.drawArrays(primitiveType, offset, count);
-	    }
+		// Draw the geometry.
+		let primitiveType = gl.TRIANGLES;
+		let offset = 0;
+		gl.drawArrays(primitiveType, offset, this.bufferInfo.numElements);
 	}
 }
 
 
 // Fill the buffer with the values that define a letter 'F'.
-function setGeometry(gl) {
+function getGeometry(gl) {
   let positions = new Float32Array([
           // left column front
           0,   0,  0,
@@ -254,141 +211,140 @@ function setGeometry(gl) {
     positions[ii + 2] = vector[2];
   }
 
-  gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+  return positions;
 }
 
 
 // Fill the buffer with colors for the 'F'.
-function setColors(gl) {
-  gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Uint8Array([
-          // left column front
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
+function getColors(gl) {
+  let colors = new Uint8Array([
+	  // left column front
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
 
-          // top rung front
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
+	  // top rung front
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
 
-          // middle rung front
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
-        200,  70, 120,
+	  // middle rung front
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
+	200,  70, 120,
 
-          // left column back
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
+	  // left column back
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
 
-          // top rung back
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
+	  // top rung back
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
 
-          // middle rung back
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
+	  // middle rung back
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
+	80, 70, 200,
 
-          // top
-        70, 200, 210,
-        70, 200, 210,
-        70, 200, 210,
-        70, 200, 210,
-        70, 200, 210,
-        70, 200, 210,
+	  // top
+	70, 200, 210,
+	70, 200, 210,
+	70, 200, 210,
+	70, 200, 210,
+	70, 200, 210,
+	70, 200, 210,
 
-          // top rung right
-        200, 200, 70,
-        200, 200, 70,
-        200, 200, 70,
-        200, 200, 70,
-        200, 200, 70,
-        200, 200, 70,
+	  // top rung right
+	200, 200, 70,
+	200, 200, 70,
+	200, 200, 70,
+	200, 200, 70,
+	200, 200, 70,
+	200, 200, 70,
 
-          // under top rung
-        210, 100, 70,
-        210, 100, 70,
-        210, 100, 70,
-        210, 100, 70,
-        210, 100, 70,
-        210, 100, 70,
+	  // under top rung
+	210, 100, 70,
+	210, 100, 70,
+	210, 100, 70,
+	210, 100, 70,
+	210, 100, 70,
+	210, 100, 70,
 
-          // between top rung and middle
-        210, 160, 70,
-        210, 160, 70,
-        210, 160, 70,
-        210, 160, 70,
-        210, 160, 70,
-        210, 160, 70,
+	  // between top rung and middle
+	210, 160, 70,
+	210, 160, 70,
+	210, 160, 70,
+	210, 160, 70,
+	210, 160, 70,
+	210, 160, 70,
 
-          // top of middle rung
-        70, 180, 210,
-        70, 180, 210,
-        70, 180, 210,
-        70, 180, 210,
-        70, 180, 210,
-        70, 180, 210,
+	  // top of middle rung
+	70, 180, 210,
+	70, 180, 210,
+	70, 180, 210,
+	70, 180, 210,
+	70, 180, 210,
+	70, 180, 210,
 
-          // right of middle rung
-        100, 70, 210,
-        100, 70, 210,
-        100, 70, 210,
-        100, 70, 210,
-        100, 70, 210,
-        100, 70, 210,
+	  // right of middle rung
+	100, 70, 210,
+	100, 70, 210,
+	100, 70, 210,
+	100, 70, 210,
+	100, 70, 210,
+	100, 70, 210,
 
-          // bottom of middle rung.
-        76, 210, 100,
-        76, 210, 100,
-        76, 210, 100,
-        76, 210, 100,
-        76, 210, 100,
-        76, 210, 100,
+	  // bottom of middle rung.
+	76, 210, 100,
+	76, 210, 100,
+	76, 210, 100,
+	76, 210, 100,
+	76, 210, 100,
+	76, 210, 100,
 
-          // right of bottom
-        140, 210, 80,
-        140, 210, 80,
-        140, 210, 80,
-        140, 210, 80,
-        140, 210, 80,
-        140, 210, 80,
+	  // right of bottom
+	140, 210, 80,
+	140, 210, 80,
+	140, 210, 80,
+	140, 210, 80,
+	140, 210, 80,
+	140, 210, 80,
 
-          // bottom
-        90, 130, 110,
-        90, 130, 110,
-        90, 130, 110,
-        90, 130, 110,
-        90, 130, 110,
-        90, 130, 110,
+	  // bottom
+	90, 130, 110,
+	90, 130, 110,
+	90, 130, 110,
+	90, 130, 110,
+	90, 130, 110,
+	90, 130, 110,
 
-          // left side
-        160, 160, 220,
-        160, 160, 220,
-        160, 160, 220,
-        160, 160, 220,
-        160, 160, 220,
-        160, 160, 220]),
-      gl.STATIC_DRAW);
+	  // left side
+	160, 160, 220,
+	160, 160, 220,
+	160, 160, 220,
+	160, 160, 220,
+	160, 160, 220,
+	160, 160, 220]);
+
+  return colors;
 }
