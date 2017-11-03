@@ -29,7 +29,9 @@ class GameObject {
 
 		// here you set all the uniforms for the shaders
 		let uniforms = {
-			u_matrix: currentTransformMatrix
+			u_matrix: currentTransformMatrix,
+			u_reverseLightDirection: v3.normalize([0.5, 0.7, 1]),
+			u_texture: this.texture
 		};
 		twgl.setUniforms(this.programInfo, uniforms)
 		// the code above does the same as the commented code below
