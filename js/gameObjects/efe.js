@@ -1,3 +1,5 @@
+'use strict';
+
 class Efe extends GameObject {
 	constructor(transform) {
 		super(transform);
