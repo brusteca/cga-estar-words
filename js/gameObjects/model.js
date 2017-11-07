@@ -14,8 +14,16 @@ class Model extends GameObject{
 			this.initialize();
 		});
 
-		this.texture = twgl.createTexture(gl, {src: texturePath});
-
+		// set texture and color
+		this.texture = null;
+		if (texturePath != null){
+			twgl.createTexture(gl, {src: texturePath}, (error, texture) => {
+				if (!error){
+					this.texture = texture;
+				} 
+			});			
+		}
+		this.color = { r : 0, g : 0, b : 0};
 	}
 
 	initialize(){
@@ -48,7 +56,13 @@ class Model extends GameObject{
 	getColors() {
 		var colors = [];
 		for (var i = 0; i < this.model.verts.length; i++){
-			colors.push(250);
+			if ((i % 3) == 0){
+				colors.push(this.color.r);
+			}else if ((i % 3) == 1){
+				colors.push(this.color.g);
+			}else{
+				colors.push(this.color.b);
+			}
 		}
 		return new Uint8Array(colors);
 	};

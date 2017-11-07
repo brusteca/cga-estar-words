@@ -77,6 +77,8 @@
 		// The texture.
 		uniform sampler2D u_texture;
 
+		uniform bool u_useTexture;
+
 		// Passed in from the vertex shader.
 		varying vec4 v_color;
 		varying vec3 v_normal;
@@ -92,8 +94,12 @@
 			float light = dot(normal, u_reverseLightDirection) * 0.3;
 			light += dot(normal, surfaceToLightDirection);
 
-			// gl_FragColor = v_color;
-			gl_FragColor = texture2D(u_texture, v_texcoord);
+			if (u_useTexture){
+				gl_FragColor = texture2D(u_texture, v_texcoord);
+			}else{
+				gl_FragColor = v_color;
+			}
+
 			// Lets multiply just the color portion (not the alpha)
 			// by the light
 			gl_FragColor.rgb *= light;
@@ -126,10 +132,11 @@
 		}
 	</script>
 
+	<script type="text/javascript" src="js/config.js"></script>
 	<script type="text/javascript" src="js/transform.js"></script>
 	<script type="text/javascript" src="js/ModelManager.js"></script>
-
 	<!-- Game Objects -->
+	<script type="text/javascript" src="js/gameObjects/BehaviorComponent.js"></script>
 	<script type="text/javascript" src="js/gameObjects/gameObject.js"></script>
 	<script type="text/javascript" src="js/gameObjects/model.js"></script>
 	<!-- Shapes -->

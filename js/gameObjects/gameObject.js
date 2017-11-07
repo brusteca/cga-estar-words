@@ -9,11 +9,11 @@ class GameObject {
 		// el setup de los programas y eso se hacen en los hijos
 		// pero eventualmente mete algo en this.programInfo y this.bufferInfo
 		// fijarse en la clase Efe
-
+		this.behaviorComponent = new BehaviorComponent([], this);
 	}
 
-	update(ms_per_update) {
-
+	update(delta) {
+		this.behaviorComponent.update(delta);
 	}
 
 	draw(viewProjectionMatrix, worldMatrix=null) {
@@ -43,7 +43,8 @@ class GameObject {
 			u_worldViewProjection: currentViewMatrix,
 			u_reverseLightDirection: v3.normalize([0.5, 0.7, 1]),
 			u_lightWorldPosition: v3.create(20, 30, 50),
-			u_texture: this.texture
+			u_texture: this.texture,
+			u_useTexture : (this.texture != null) 
 		};
 		twgl.setUniforms(this.programInfo, uniforms)
 

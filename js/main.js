@@ -16,6 +16,9 @@ let modelManager = new ModelManager();
 
 let world = null;
 
+const MODEL_BASE_PATH = "resources/models/";
+const TEXTURE_BASE_PATH = "resources/textures/";
+
 function main() {
 	// Only continue if WebGL is available and working
 	if (!gl) {
@@ -27,7 +30,7 @@ function main() {
 	// Clear the color buffer with specified clear color
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
-	world = new World();
+	world = new World(config.globalEvents);
 
 	// world.gameObjects.push(new GameObject(new Transform(
 	// 	v3.create(1, 1, 1)
@@ -52,12 +55,28 @@ function main() {
 		v3.create(1, 1, 1)
 	)));
 
-	var fox = new Model("resources/models/fox.obj", "resources/textures/fox_texture.png", new Transform(
-		v3.create(100,-70,0),
+	/*
+	var fox = new Model("resources/models/x-wing.obj", "resources/textures/fox_texture.png", new Transform(
+		v3.create(-300,-70,300),
 		m4.create(),
-		v3.create(1, 1, 1)
+		v3.create(0.2, 0.2, 0.2)
 	));
 	world.gameObjects.push(fox);
+	*/
+
+	for (var i = 0; i < config.models.length; i++){
+		var configModel = config.models[i];
+		var model = parseModel(configModel);
+		world.gameObjects.push(model);
+	}
+	/*
+	var milleniumFalcon = new Model("resources/models/millenium-falcon.obj", "resources/textures/falcon.jpg", new Transform(
+		v3.create(-600,-50,600),
+		m4.create(),
+		v3.create(0.2, 0.2, 0.2)
+	));
+	world.gameObjects.push(milleniumFalcon);
+	*/
 
 	requestAnimationFrame(initLoop)
 
@@ -109,7 +128,7 @@ function main() {
 	    var zFar = 2000;
 	    var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 
-		let radius = 200;
+		let radius = 250;
 	    // Compute the position of the first F
 	    var centerPosition = [0, 0, 0];
 
@@ -128,100 +147,46 @@ function main() {
 	    var up = [0, 1, 0];
 
 	    // Compute the camera's matrix using look at.
-	    var cameraMatrix = m4.lookAt(cameraPosition, centerPosition, up);
+	    //var cameraMatrix = m4.lookAt(cameraPosition, centerPosition, up);	
+		var cameraMatrix = m4.lookAt(world.getCameraPosition(), world.getViewportCenter(), world.getViewportUpVector());
 
 	    // Make a view matrix from the camera matrix
 	    var viewMatrix = m4.inverse(cameraMatrix);
 
 	    // Compute a view projection matrix
-	    var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+	    //var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+	    var viewProjectionMatrix = m4.multiply(world.getProjectionMatrix(), viewMatrix);
 
 		for (let ii = 0, len = world.gameObjects.length; ii < len; ++ii) {
 			world.gameObjects[ii].draw(viewProjectionMatrix);
 		}
 	}
 
-	function update(ms_per_update){
-		cameraAngleRadians = degreesToRadians( (radiansToDegrees(cameraAngleRadians) + 0.3) % 360);
-
-		for (let ii = 0, len = world.gameObjects.length; ii < len; ++ii) {
-			world.gameObjects[ii].update(ms_per_update);
-		}
+	function update(ms){
+		//cameraAngleRadians = degreesToRadians( (radiansToDegrees(cameraAngleRadians) + 0.3) % 360);
+		world.update(ms * 0.001); // update in seconds!
 	}
+
+	function parseModel(configModel){
+		var color = configModel.color || {};
+		var configTransform = configModel.transform || {};
+		var translate = configTransform.translate || {};
+		var rotation = configTransform.rotation || {};
+		var scale = configTransform.scale || {};
+		var texture = configModel.texture == undefined? null : (TEXTURE_BASE_PATH + configModel.texture);
+		var transform = new Transform(
+			v3.create(translate.x || 0 ,translate.y || 0, translate.z || 0),
+			m4.create(),
+			v3.create(scale.x || 1, scale.y || 1, scale.z || 1)
+		);
+		var model = new Model(MODEL_BASE_PATH + configModel.model, texture, transform);
+		model.color.r = color.r == undefined? 255 : color.r; // default  
+		model.color.g = color.g == undefined? 255 : color.g; // is YELLOW
+		model.color.b = color.b == undefined? 0   : color.b;
+		return model;
+	}
+
 }
 
 
-/*
-    Parses an .obj model and loads it into the scene.
 
-    Applies any transform present in 'model_config' to the loaded mesh.
-
-Control.parse_obj_model = function(obj_txt, model_config, start_when_finished){
-    var parsed_obj = K3D.parse.fromOBJ(obj_txt);
-
-    // save the generated triangles in the config
-    var model_name = model_config.name;
-
-    for (var i = 0; i < parsed_obj.i_verts.length; i+=3){
-        var verts = [];
-        var normals = [];
-        var texture_coordinates = [];
-        var has_texture = false;
-        var has_normals = true;
-
-        // in a .obj model, verts are expressed in counterclockwise order
-        for (var j = 2; j >= 0; j--){
-            var v_i = parsed_obj.i_verts[i + j] * 3; // vertex index
-            var n_i = parsed_obj.i_norms[i + j] * 3; // normal index
-            var t_i = parsed_obj.i_uvt[i + j] * 2; // texture index
-
-            var x = parsed_obj.c_verts[v_i];
-            var y = parsed_obj.c_verts[v_i+1];
-            var z = parsed_obj.c_verts[v_i+2];
-
-            verts.push(new Vector(x,y,z));
-
-            if (isNaN(n_i)){
-                has_normals = false;
-            }else{
-                x = parsed_obj.c_norms[n_i];
-                y = parsed_obj.c_norms[n_i+1];
-                z = parsed_obj.c_norms[n_i+2];
-
-                normals.push(new Vector(x,y,z));                
-            }
-
-            if (!isNaN(t_i)){
-                var u = parsed_obj.c_uvt[t_i];
-                var v = parsed_obj.c_uvt[t_i + 1];
-                texture_coordinates.push([u,v]);
-                has_texture = (model_config.texture != "");
-            }
-        }
-
-        // scale and rotate
-        for (var k = 0; k < verts.length; k++){
-            verts[k] = Vector.fromArray(math.multiply(verts[k].toArray(),transform_matrix)._data);
-            if (has_normals)
-                normals[k] = Vector.fromArray(math.multiply(normals[k].toArray(),rotation_matrix)._data);
-        }   
-        // translate object
-        for (var k = 0; k < verts.length; k++){
-            verts[k].x += model_config.transform.translate.x;
-            verts[k].y += model_config.transform.translate.y;
-            verts[k].z += model_config.transform.translate.z;
-        }
-
-        var t = new Triangle(verts, null, color, 1, color, false, 0, 0);
-        t.has_texture = has_texture;
-        t.texture_coordinates = texture_coordinates;
-        t.texture_name = model_config.texture;
-
-        // calculate normal at the baricenter of the triangle
-        if (has_normals){
-            t.set_normals(normals);
-        }
-
-    }
-
-    */
