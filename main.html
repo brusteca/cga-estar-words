@@ -44,13 +44,14 @@
 		uniform mat4 u_worldViewProjection;
 		uniform mat4 u_worldInverseTranspose;
 
-		uniform vec3 u_lightWorldPosition;
+		uniform vec3 u_pointLightPositions[16];
+		// uniform vec3 u_pointLightColors[16];
 
 		varying vec4 v_color;
 		varying vec3 v_normal;
 		varying vec2 v_texcoord;
 
-		varying vec3 v_surfaceToLight;
+		varying vec3 v_surfaceToLightDirections[16];
 
 		void main() {
 			// Multiply the position by the matrix.
@@ -66,7 +67,9 @@
 			vec3 surfaceWorldPosition = (u_world * a_position).xyz;
 			// compute the vector of the surface to the light
 			// and pass it to the fragment shader
-			v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+			for (int ii = 0; ii < 16; ++ii) {
+				v_surfaceToLightDirections[ii] = u_pointLightPositions[ii] - surfaceWorldPosition;
+			}
 		}
 	</script>
 	<!-- fragment shader -->
@@ -78,21 +81,25 @@
 		uniform sampler2D u_texture;
 
 		uniform bool u_useTexture;
+		uniform vec3 u_pointLightColors[16];
 
 		// Passed in from the vertex shader.
 		varying vec4 v_color;
 		varying vec3 v_normal;
 		varying vec2 v_texcoord;
-		varying vec3 v_surfaceToLight;
+		varying vec3 v_surfaceToLightDirections[16];
 
 		void main() {
 			// because v_normal is a varying it's interpolated
 			// we it will not be a uint vector. Normalizing it
 			// will make it a unit vector again
+			vec3 normalSurfaceToLightDirections[16];
 			vec3 normal = normalize(v_normal);
-			vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+			for (int ii = 0; ii < 16; ++ii) {
+				normalSurfaceToLightDirections[ii] = normalize(v_surfaceToLightDirections[ii]);
+			}
 			float light = dot(normal, u_reverseLightDirection) * 0.3;
-			light += dot(normal, surfaceToLightDirection);
+			light += dot(normal, normalSurfaceToLightDirections[0]);
 
 			if (u_useTexture){
 				gl_FragColor = texture2D(u_texture, v_texcoord);
@@ -134,9 +141,9 @@
 
 	<script type="text/javascript" src="js/config.js"></script>
 	<script type="text/javascript" src="js/transform.js"></script>
-	<script type="text/javascript" src="js/ModelManager.js"></script>
+	<script type="text/javascript" src="js/modelManager.js"></script>
 	<!-- Game Objects -->
-	<script type="text/javascript" src="js/gameObjects/BehaviorComponent.js"></script>
+	<script type="text/javascript" src="js/gameObjects/behaviorComponent.js"></script>
 	<script type="text/javascript" src="js/gameObjects/gameObject.js"></script>
 	<script type="text/javascript" src="js/gameObjects/model.js"></script>
 	<!-- Shapes -->
