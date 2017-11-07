@@ -52,8 +52,8 @@ function main() {
 		v3.create(1, 1, 1)
 	)));
 
-	var fox = new Model("resources/models/fox.obj", new Transform(
-		v3.create(0,-70,0),
+	var fox = new Model("resources/models/fox.obj", "resources/textures/fox_texture.png", new Transform(
+		v3.create(100,-70,0),
 		m4.create(),
 		v3.create(1, 1, 1)
 	));

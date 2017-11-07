@@ -2,19 +2,20 @@
 
 class Model extends GameObject{
 	
-	constructor(model, transform) {
+	constructor(modelPath, texturePath, transform) {
 		super(transform);
 
 		this.modelLoaded = false;
 		this.model = null;
-		this.ready = false;
 		// to do: is it necesary for the model to store all the information of the object (geometry, normals, textures)?
-		modelManager.getModelGeometry(model).then((model) => {
+		modelManager.getModelGeometry(modelPath).then((model) => {
 			this.modelLoaded = true;
 			this.model = model;
 			this.initialize();
-			this.ready = true;
 		});
+
+		this.texture = twgl.createTexture(gl, {src: texturePath});
+
 	}
 
 	initialize(){
@@ -33,7 +34,7 @@ class Model extends GameObject{
 	}
 
 	draw(viewProjectionMatrix, worldMatrix=null) {
-		if (this.ready){
+		if (this.modelLoaded){
 			super.draw(viewProjectionMatrix, worldMatrix);
 		}
 	}
@@ -47,7 +48,7 @@ class Model extends GameObject{
 	getColors() {
 		var colors = [];
 		for (var i = 0; i < this.model.verts.length; i++){
-			colors.push(100);
+			colors.push(250);
 		}
 		return new Uint8Array(colors);
 	};
