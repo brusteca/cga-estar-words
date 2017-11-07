@@ -17,6 +17,7 @@ class GameObject {
 	}
 
 	draw(viewProjectionMatrix, worldMatrix=null) {
+
 		// Tell it to use our program (pair of shaders)
 		gl.useProgram(this.programInfo.program);
 		// Bind all the buffers and attributes of the program
