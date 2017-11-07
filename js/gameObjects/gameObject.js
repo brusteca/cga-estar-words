@@ -16,30 +16,35 @@ class GameObject {
 
 	}
 
-	draw(viewProjectionMatrix) {
+	draw(viewProjectionMatrix, worldMatrix=null) {
 		// Tell it to use our program (pair of shaders)
 		gl.useProgram(this.programInfo.program);
 		// Bind all the buffers and attributes of the program
 		twgl.setBuffersAndAttributes(
 			gl, this.programInfo, this.bufferInfo);
 
-		// Apply the transform to the viewMatrix
-		let currentTransformMatrix = m4.multiply(
+		// this one transforms to world coordinates
+		let currentWorldMatrix;
+		if (worldMatrix === null) {
+			currentWorldMatrix = m4.copy(this.transform.transformMatrix);
+		} else {
+			currentWorldMatrix = m4.multiply(
+				worldMatrix, this.transform.transformMatrix);
+		}
+		// this one transforms to camera coordinates
+		let currentViewMatrix = m4.multiply(
 			viewProjectionMatrix, this.transform.transformMatrix);
 
 		// here you set all the uniforms for the shaders
 		let uniforms = {
-			u_matrix: currentTransformMatrix,
+			u_world: currentWorldMatrix,
+			u_worldInverseTranspose: m4.inverse(currentWorldMatrix),
+			u_worldViewProjection: currentViewMatrix,
 			u_reverseLightDirection: v3.normalize([0.5, 0.7, 1]),
+			u_lightWorldPosition: v3.create(20, 30, 50),
 			u_texture: this.texture
 		};
 		twgl.setUniforms(this.programInfo, uniforms)
-		// the code above does the same as the commented code below
-		// gl.uniformMatrix4fv(
-		// 	this.programInfo.uniformSetters.u_matrix.location,
-		// 	false,
-		// 	currentTransformMatrix
-		// );
 
 		// Draw the geometry.
 		let primitiveType = gl.TRIANGLES;
