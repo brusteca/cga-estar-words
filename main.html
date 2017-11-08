@@ -98,8 +98,12 @@
 			for (int ii = 0; ii < 16; ++ii) {
 				normalSurfaceToLightDirections[ii] = normalize(v_surfaceToLightDirections[ii]);
 			}
-			float light = dot(normal, u_reverseLightDirection) * 0.3;
-			light += dot(normal, normalSurfaceToLightDirections[0]);
+			// float light = dot(normal, u_reverseLightDirection) * 0.3;
+
+			vec3 light = vec3(0, 0, 0);
+			for (int ii = 0; ii < 16; ++ii) {
+				light += u_pointLightColors[ii].rgb * dot(normal, normalSurfaceToLightDirections[ii]);
+			}
 
 			if (u_useTexture){
 				gl_FragColor = texture2D(u_texture, v_texcoord);
@@ -107,32 +111,6 @@
 				gl_FragColor = v_color;
 			}
 
-			// Lets multiply just the color portion (not the alpha)
-			// by the light
-			gl_FragColor.rgb *= light;
-		}
-	</script>
-	<script id="3d-fragment-shader-floor" type="x-shader/x-fragment">
-		precision mediump float;
-
-		uniform vec3 u_reverseLightDirection;
-		// The texture.
-		uniform sampler2D u_texture;
-
-		// Passed in from the vertex shader.
-		varying vec4 v_color;
-		varying vec3 v_normal;
-		varying vec2 v_texcoord;
-
-		void main() {
-			// because v_normal is a varying it's interpolated
-			// we it will not be a uint vector. Normalizing it
-			// will make it a unit vector again
-			vec3 normal = normalize(v_normal);
-			float light = dot(normal, u_reverseLightDirection);
-
-			gl_FragColor = v_color;
-			// gl_FragColor = texture2D(u_texture, v_texcoord);
 			// Lets multiply just the color portion (not the alpha)
 			// by the light
 			gl_FragColor.rgb *= light;

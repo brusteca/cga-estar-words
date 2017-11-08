@@ -3,6 +3,7 @@
 class World {
 	constructor(instructions) {
 		this.gameObjects = [];
+		this.pointLights = [];
 		this.events = new BehaviorComponent(instructions, this);
 
 		// camera and viewport information
@@ -13,8 +14,31 @@ class World {
 		this.viewportUp = v3.create(0,1,0);
 	}
 
+	setLightPositionsAndColors() {
+		// after updating the lights, set the internal cache
+		// TODO: don't make a new instance each time
+		this.pointLightPositions = new Float32Array(
+			[].concat.apply([], this.pointLights.map(
+				pointLight =>  pointLight.getPosition()
+			))
+		);
+		this.pointLightColors = new Float32Array(
+			[].concat.apply([], this.pointLights.map(
+				pointLight =>  pointLight.getColor()
+			))
+		);
+
+
+	}
+
 	update(delta){
 		this.events.update(delta);
+
+		for (let ii = 0, len = this.pointLights.length; ii < len; ++ii){
+			this.pointLights[ii].update(delta);
+		}
+		// after updating the lights, set the internal cache
+		this.setLightPositionsAndColors();
 
 		for (let ii = 0, len = this.gameObjects.length; ii < len; ++ii) {
 			this.gameObjects[ii].update(delta);
@@ -37,13 +61,13 @@ class World {
 	setCameraSpeed(params){
 		this.cameraSpeed[0] = params.x;
 		this.cameraSpeed[1] = params.y;
-		this.cameraSpeed[2] = params.z;	
+		this.cameraSpeed[2] = params.z;
 	}
 
 	setCameraAcceleration(params){
 		this.cameraAcceleration[0] = params.x;
 		this.cameraAcceleration[1] = params.y;
-		this.cameraAcceleration[2] = params.z;	
+		this.cameraAcceleration[2] = params.z;
 	}
 
 	setCameraRotation(){
@@ -64,7 +88,7 @@ class World {
 
 	getViewportCenter(){
 	    return this.viewportCenter;
-	} 
+	}
 
 	getViewportUpVector(){
 	    return this.viewportUp;
@@ -78,7 +102,5 @@ class World {
 	    var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 	    return projectionMatrix;
 	}
-
-
 
 }

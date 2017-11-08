@@ -36,42 +36,9 @@ class GameObject {
 		let currentViewMatrix = m4.multiply(
 			viewProjectionMatrix, this.transform.transformMatrix);
 		// TODO: move this to a bunch of light instances inside world
-		let pointLightPositions = new Float32Array([
-			-80, 30, 50,
-			-200, 30, 50,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-		]);
-		let pointLightColors = new Uint8Array([
-			255, 255, 255,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-		]);
+		let pointLightPositions = world.pointLightPositions;
+		let pointLightColors = world.pointLightColors;
+
 		// here you set all the uniforms for the shaders
 		let uniforms = {
 			u_world: currentWorldMatrix,
@@ -79,7 +46,7 @@ class GameObject {
 			u_worldViewProjection: currentViewMatrix,
 			u_reverseLightDirection: v3.normalize([0.5, 0.7, 1]),
 			u_pointLightPositions: pointLightPositions,
-			// u_pointLightColors: pointLightColors,
+			u_pointLightColors: pointLightColors,
 			u_texture: this.texture,
 			u_useTexture : (this.texture != null)
 		};
