@@ -11,6 +11,9 @@ class World {
 		this.cameraAcceleration = v3.create(0,0,0);
 		this.viewportCenter = v3.create(0,20,0);
 		this.viewportUp = v3.create(0,1,0);
+
+		this.skyDome = new SkyDome(new Transform());
+		this.gameObjects.push(this.skyDome);
 	}
 
 	update(delta){
@@ -21,7 +24,6 @@ class World {
 		}
 
 		this.updateCamera(delta);
-
 	}
 
 	updateCamera(delta){
@@ -32,6 +34,8 @@ class World {
 
 		v3.add(this.cameraPosition, v3.mulScalar(this.cameraSpeed, delta), this.cameraPosition);
 		v3.add(this.viewportCenter, v3.mulScalar(this.cameraSpeed, delta), this.viewportCenter);
+		v3.add(this.skyDome.transform.position, v3.mulScalar(this.cameraSpeed, delta), this.skyDome.transform.position);
+		this.skyDome.transform.calculateTransformMatrix();
 	}
 
 	setCameraSpeed(params){
@@ -74,7 +78,7 @@ class World {
 	    // Compute the projection matrix
 	    var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 	    var zNear = 1;
-	    var zFar = 2000;
+	    var zFar = 20000;
 	    var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 	    return projectionMatrix;
 	}

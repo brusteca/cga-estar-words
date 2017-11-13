@@ -79,7 +79,6 @@
 
 		uniform bool u_useTexture;
 
-		// Passed in from the vertex shader.
 		varying vec4 v_color;
 		varying vec3 v_normal;
 		varying vec2 v_texcoord;
@@ -132,12 +131,55 @@
 		}
 	</script>
 
+	<!-- vertex shader -->
+	<script id="3d-vertex-shader-skydome" type="x-shader/x-vertex">
+		attribute vec4 a_position;
+		attribute vec4 a_color;
+		attribute vec3 a_normal;
+		attribute vec2 a_texcoord;
+
+		uniform mat4 u_world;
+		uniform mat4 u_worldViewProjection;
+		uniform mat4 u_worldInverseTranspose;
+
+		varying vec4 v_color;
+		varying vec3 v_normal;
+		varying vec2 v_texcoord;
+
+		void main() {
+			// Multiply the position by the matrix.
+			gl_Position = u_worldViewProjection * a_position;
+
+			// Pass the color to the fragment shader.
+			v_color = a_color;
+			v_texcoord = a_texcoord;
+
+			// orient the normals and pass to the fragment shader
+			v_normal = mat3(u_worldInverseTranspose) * a_normal;
+		}
+	</script>
+	<script id="3d-fragment-shader-skydome" type="x-shader/x-fragment">
+		precision mediump float;
+
+		uniform sampler2D u_texture;
+
+		// Passed in from the vertex shader.
+		varying vec4 v_color;
+		varying vec3 v_normal;
+		varying vec2 v_texcoord;
+
+		void main() {
+			gl_FragColor = texture2D(u_texture, v_texcoord);
+		}
+	</script>
+
 	<script type="text/javascript" src="js/config.js"></script>
 	<script type="text/javascript" src="js/transform.js"></script>
 	<script type="text/javascript" src="js/ModelManager.js"></script>
 	<!-- Game Objects -->
 	<script type="text/javascript" src="js/gameObjects/BehaviorComponent.js"></script>
 	<script type="text/javascript" src="js/gameObjects/gameObject.js"></script>
+	<script type="text/javascript" src="js/gameObjects/skyDome.js"></script>
 	<script type="text/javascript" src="js/gameObjects/model.js"></script>
 	<!-- Shapes -->
 	<script type="text/javascript" src="js/gameObjects/efe.js"></script>

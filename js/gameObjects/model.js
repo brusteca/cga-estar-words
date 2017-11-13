@@ -15,14 +15,13 @@ class Model extends GameObject{
 		});
 
 		// set texture and color
-		this.texture = null;
-		if (texturePath != null){
-			twgl.createTexture(gl, {src: texturePath}, (error, texture) => {
-				if (!error){
-					this.texture = texture;
-				} 
-			});			
-		}
+		
+		this.useTexture = false;
+		this.texture = twgl.createTexture(gl, {src: texturePath}, (error, texture) => {
+			if (!error){
+				this.useTexture = true;
+			} 
+		});			
 		this.color = { r : 0, g : 0, b : 0};
 	}
 

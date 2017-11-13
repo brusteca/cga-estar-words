@@ -24,6 +24,17 @@ class GameObject {
 		twgl.setBuffersAndAttributes(
 			gl, this.programInfo, this.bufferInfo);
 
+		// here you set all the uniforms for the shaders
+		var uniforms = this.getUniforms(viewProjectionMatrix, worldMatrix);
+		twgl.setUniforms(this.programInfo, uniforms)
+
+		// Draw the geometry.
+		let primitiveType = gl.TRIANGLES;
+		let offset = 0;
+		gl.drawArrays(primitiveType, offset, this.bufferInfo.numElements);
+	}
+
+	addGameObjectUniforms(uniforms, viewProjectionMatrix, worldMatrix){
 		// this one transforms to world coordinates
 		let currentWorldMatrix;
 		if (worldMatrix === null) {
@@ -36,21 +47,21 @@ class GameObject {
 		let currentViewMatrix = m4.multiply(
 			viewProjectionMatrix, this.transform.transformMatrix);
 
-		// here you set all the uniforms for the shaders
+		uniforms.u_world = currentWorldMatrix;
+		uniforms.u_worldInverseTranspose = m4.inverse(currentWorldMatrix);
+		uniforms.u_worldViewProjection = currentViewMatrix;
+	}
+
+	getUniforms(viewProjectionMatrix, worldMatrix){
 		let uniforms = {
-			u_world: currentWorldMatrix,
-			u_worldInverseTranspose: m4.inverse(currentWorldMatrix),
-			u_worldViewProjection: currentViewMatrix,
 			u_reverseLightDirection: v3.normalize([0.5, 0.7, 1]),
 			u_lightWorldPosition: v3.create(20, 30, 50),
 			u_texture: this.texture,
-			u_useTexture : (this.texture != null) 
+			u_useTexture : ((this.useTexture == undefined) || this.useTexture) 
 		};
-		twgl.setUniforms(this.programInfo, uniforms)
 
-		// Draw the geometry.
-		let primitiveType = gl.TRIANGLES;
-		let offset = 0;
-		gl.drawArrays(primitiveType, offset, this.bufferInfo.numElements);
+		this.addGameObjectUniforms(uniforms, viewProjectionMatrix, worldMatrix);
+
+		return uniforms;
 	}
 }

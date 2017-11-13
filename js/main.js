@@ -49,6 +49,7 @@ function main() {
 			v3.add(center, v3.create(x, 0, y))
 		)));
 	}
+	
 	world.gameObjects.push(new Floor(new Transform(
 		v3.create(0,-70,0),
 		m4.create(),
