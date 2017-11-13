@@ -32,9 +32,59 @@ function main() {
 
 	world = new World(config.globalEvents);
 
-	// world.gameObjects.push(new GameObject(new Transform(
-	// 	v3.create(1, 1, 1)
-	// )));
+	let numLights = 16;
+	let pointLightPositions = [
+		-80, 30, 58,
+		-250, 60, 50,
+		-550, 60, 150,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0
+	];
+	let pointLightColors = [
+		0.3, 0, 0.6,
+		0, 0.5, 0,
+		0.8, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0
+	];
+	for (let ii = 0; ii < numLights*3; ii+=3) {
+		world.pointLights.push(new PointLight(
+			new Transform(
+				v3.create(
+					pointLightPositions[ii],
+					pointLightPositions[ii+1],
+					pointLightPositions[ii+2],
+				)
+			),
+			[
+				pointLightColors[ii],
+				pointLightColors[ii+1],
+				pointLightColors[ii+2]
+			]
+		));
+	}
 
 	let numFs = 8;
 	let radius = 200;
@@ -148,7 +198,7 @@ function main() {
 	    var up = [0, 1, 0];
 
 	    // Compute the camera's matrix using look at.
-	    //var cameraMatrix = m4.lookAt(cameraPosition, centerPosition, up);	
+	    //var cameraMatrix = m4.lookAt(cameraPosition, centerPosition, up);
 		var cameraMatrix = m4.lookAt(world.getCameraPosition(), world.getViewportCenter(), world.getViewportUpVector());
 
 	    // Make a view matrix from the camera matrix
@@ -181,13 +231,10 @@ function main() {
 			v3.create(scale.x || 1, scale.y || 1, scale.z || 1)
 		);
 		var model = new Model(MODEL_BASE_PATH + configModel.model, texture, transform);
-		model.color.r = color.r == undefined? 255 : color.r; // default  
+		model.color.r = color.r == undefined? 255 : color.r; // default
 		model.color.g = color.g == undefined? 255 : color.g; // is YELLOW
 		model.color.b = color.b == undefined? 0   : color.b;
 		return model;
 	}
 
 }
-
-
-

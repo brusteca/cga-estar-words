@@ -46,6 +46,9 @@ class GameObject {
 		// this one transforms to camera coordinates
 		let currentViewMatrix = m4.multiply(
 			viewProjectionMatrix, this.transform.transformMatrix);
+		// TODO: move this to a bunch of light instances inside world
+		let pointLightPositions = world.pointLightPositions;
+		let pointLightColors = world.pointLightColors;
 
 		uniforms.u_world = currentWorldMatrix;
 		uniforms.u_worldInverseTranspose = m4.inverse(currentWorldMatrix);
@@ -55,9 +58,10 @@ class GameObject {
 	getUniforms(viewProjectionMatrix, worldMatrix){
 		let uniforms = {
 			u_reverseLightDirection: v3.normalize([0.5, 0.7, 1]),
-			u_lightWorldPosition: v3.create(20, 30, 50),
+			u_pointLightPositions: world.pointLightPositions,
+			u_pointLightColors: world.pointLightColors,
 			u_texture: this.texture,
-			u_useTexture : ((this.useTexture == undefined) || this.useTexture) 
+			u_useTexture : (this.texture != null)
 		};
 
 		this.addGameObjectUniforms(uniforms, viewProjectionMatrix, worldMatrix);
