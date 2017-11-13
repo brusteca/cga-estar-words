@@ -86,6 +86,8 @@ function main() {
 		));
 	}
 
+	//world.cameraPosition = config.camera.position || [0,0,0];
+	/*
 	let numFs = 8;
 	let radius = 200;
 	let center = v3.create(1,1,1);
@@ -99,13 +101,14 @@ function main() {
 			v3.add(center, v3.create(x, 0, y))
 		)));
 	}
-	
+	*/
+	/*
 	world.gameObjects.push(new Floor(new Transform(
 		v3.create(0,-70,0),
 		m4.create(),
 		v3.create(1, 1, 1)
 	)));
-
+	*/
 	/*
 	var fox = new Model("resources/models/x-wing.obj", "resources/textures/fox_texture.png", new Transform(
 		v3.create(-300,-70,300),
@@ -117,7 +120,7 @@ function main() {
 
 	for (var i = 0; i < config.models.length; i++){
 		var configModel = config.models[i];
-		var model = parseModel(configModel);
+		var model = parseModel(configModel, config.modelDefaults[configModel.type]);
 		world.gameObjects.push(model);
 	}
 	/*
@@ -218,23 +221,38 @@ function main() {
 		world.update(ms * 0.001); // update in seconds!
 	}
 
-	function parseModel(configModel){
-		var color = configModel.color || {};
+	function parseModel(configModel, modelDefaults){
+		var texture = modelDefaults.texture == undefined? null : (TEXTURE_BASE_PATH + modelDefaults.texture);
+		var color = configModel.color || modelDefaults.color || {};
 		var configTransform = configModel.transform || {};
 		var translate = configTransform.translate || {};
 		var rotation = configTransform.rotation || {};
 		var scale = configTransform.scale || {};
-		var texture = configModel.texture == undefined? null : (TEXTURE_BASE_PATH + configModel.texture);
+		var rotationMatrix = m4.create();
+		m4.rotateX(rotationMatrix, rotation.x || 0, rotationMatrix);
 		var transform = new Transform(
 			v3.create(translate.x || 0 ,translate.y || 0, translate.z || 0),
-			m4.create(),
+			rotationMatrix,
 			v3.create(scale.x || 1, scale.y || 1, scale.z || 1)
 		);
-		var model = new Model(MODEL_BASE_PATH + configModel.model, texture, transform);
+		var script = configModel.script || [];
+		var model = instanciateModel(configModel.type, MODEL_BASE_PATH + modelDefaults.file, texture, transform, script);
 		model.color.r = color.r == undefined? 255 : color.r; // default
 		model.color.g = color.g == undefined? 255 : color.g; // is YELLOW
 		model.color.b = color.b == undefined? 0   : color.b;
+
+		model.frontDirection = v3.create(modelDefaults.front.x, modelDefaults.front.y, modelDefaults.front.z);
 		return model;
+	}
+
+	function instanciateModel(modelType, modelPath, texturePath, transform, script){
+		switch (modelType){
+			case "tie":
+			case "falcon":
+				return new Ship(modelPath, texturePath, transform, script);
+				break;
+		}
+		return null; // breaks the caller, but we will know :)
 	}
 
 }

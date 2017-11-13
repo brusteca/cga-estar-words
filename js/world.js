@@ -7,10 +7,10 @@ class World {
 		this.events = new BehaviorComponent(instructions, this);
 
 		// camera and viewport information
-		this.cameraPosition = v3.create(10,20,0);
+		this.cameraPosition = v3.create(60,0,0);
 		this.cameraSpeed = v3.create(0,0,0);
 		this.cameraAcceleration = v3.create(0,0,0);
-		this.viewportCenter = v3.create(0,20,0);
+		this.viewportCenter = v3.create(50,0,0);
 		this.viewportUp = v3.create(0,1,0);
 
 		this.skyDome = new SkyDome(new Transform());
@@ -75,7 +75,9 @@ class World {
 	}
 
 	setCameraRotation(){
-
+		this.cameraRotation[0] = params.x;
+		this.cameraRotation[1] = params.y;
+		this.cameraRotation[2] = params.z;	
 	}
 
 	setCameraRotationSpeed(){

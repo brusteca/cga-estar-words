@@ -9,11 +9,13 @@ class GameObject {
 		// el setup de los programas y eso se hacen en los hijos
 		// pero eventualmente mete algo en this.programInfo y this.bufferInfo
 		// fijarse en la clase Efe
-		this.behaviorComponent = new BehaviorComponent([], this);
+		this.behaviorComponent = new BehaviorComponent([], this);	
+		this.motionComponent = new MotionComponent(this);
 	}
 
 	update(delta) {
 		this.behaviorComponent.update(delta);
+		this.motionComponent.update(delta);
 	}
 
 	draw(viewProjectionMatrix, worldMatrix=null) {
@@ -68,4 +70,11 @@ class GameObject {
 
 		return uniforms;
 	}
+
+	setSpeed(params){
+		this.motionComponent.setSpeed(params.speed);
+	}
+
+
+
 }

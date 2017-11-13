@@ -2,7 +2,7 @@
 
 class Model extends GameObject{
 	
-	constructor(modelPath, texturePath, transform) {
+	constructor(modelPath, texturePath, transform, script) {
 		super(transform);
 
 		this.modelLoaded = false;
@@ -23,6 +23,8 @@ class Model extends GameObject{
 			} 
 		});			
 		this.color = { r : 0, g : 0, b : 0};
+
+		this.behaviorComponent.instructions = script;
 	}
 
 	initialize(){
@@ -45,8 +47,6 @@ class Model extends GameObject{
 			super.draw(viewProjectionMatrix, worldMatrix);
 		}
 	}
-
-
 
 	getGeometry() {
 		return new Float32Array(this.model.verts);
@@ -74,5 +74,8 @@ class Model extends GameObject{
 		return new Float32Array(this.model.texels);
 	};
 
-
+	getFrontDirection() {
+		// to do: multiply by rotation matrix
+		return this.frontDirection;
+	}
 }
