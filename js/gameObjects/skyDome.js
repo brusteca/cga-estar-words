@@ -16,7 +16,7 @@ class SkyDome extends GameObject {
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
 		this.useTexture = false;
-		this.texture = twgl.createTexture(gl, {src: "resources/textures/space_skybox_1.png"}, 
+		this.texture = twgl.createTexture(gl, {src: images.skybox}, 
 			(error, texture) => {
 				if (!error){
 					this.useTexture = true;
