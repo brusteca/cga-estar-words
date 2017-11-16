@@ -6,13 +6,7 @@ class Terrain extends GameObject {
 		// setup GLSL program
 		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"])
 
-
-		let img_width = 4096;
-		let img_height = 4096;
-		let img = new Image(img_width, img_height);
-		img.src = 'resources/heightmaps/heightmap_Poland_4096x4096_16c.png'
-		let height_data = this.getHeightData(img, img_width, img_height)
-		console.log(height_data);
+		let height_data = this.getHeightData(images.heightmap, images.heightmap.width, images.heightmap.height);
 		let max = -99999;
 		let min = 99999;
 		for (let ii = 0; ii < height_data.length; ++ii) {
@@ -23,9 +17,7 @@ class Terrain extends GameObject {
 				min = height_data[ii];
 			}
 		}
-		console.log(max);
-		console.log(min);
-
+		
 		return;
 		let arrays = {
 			// Estos nombres dependen de las letiables de los shaders

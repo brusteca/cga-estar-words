@@ -8,7 +8,8 @@ var config = {
 		},
 		textures : {
 			falcon : "resources/textures/falcon.jpg",
-			skybox : "resources/textures/space_skybox_1.png"
+			skybox : "resources/textures/space_skybox_1.png",
+			heightmap : "resources/heightmaps/heightmap_Poland_4096x4096_16c.png"
 		}
 	},
 
