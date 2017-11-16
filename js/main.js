@@ -108,13 +108,19 @@ function main() {
 		)));
 	}
 	*/
-	/*
+
 	world.gameObjects.push(new Floor(new Transform(
 		v3.create(0,-70,0),
 		m4.create(),
 		v3.create(1, 1, 1)
 	)));
-	*/
+
+	let terrain = new Terrain(new Transform(
+		v3.create(0,-70,0),
+		m4.create(),
+		v3.create(1, 1, 1)
+	));
+
 	/*
 	var fox = new Model("resources/models/x-wing.obj", "resources/textures/fox_texture.png", new Transform(
 		v3.create(-300,-70,300),
@@ -161,7 +167,7 @@ function main() {
 					update(MS_PER_UPDATE);
 					lag -= MS_PER_UPDATE;
 				}
-			    draw();				
+			    draw();
 			}
 
 		    requestAnimationFrame(mainLoop);
@@ -275,7 +281,7 @@ for (var i = 0; i < 255; i++){
 }
 
 document.onfocus = function(){
-	
+
 }
 
 document.onblur = function(){
@@ -301,10 +307,10 @@ function preloader(){
 	let img;
 	let canvas = document.getElementById('2dCanvas');
 	let context = canvas.getContext('2d');
-	
+
 	canvas.height = window.innerHeight;
 	canvas.width = window.innerWidth;	percentLoaded = 0;
-	
+
 	for (img in config.resources.textures){
 		percentLoaded += (images[img].request.percentLoaded == undefined)? 0 : images[img].request.percentLoaded;
 	}
@@ -312,7 +318,7 @@ function preloader(){
 	for (snd in soundSources){
 		percentLoaded += (sounds[snd].request.percentLoaded == undefined)? 0 : sounds[snd].request.percentLoaded;
 	}*/
-	percentLoaded = percentLoaded / assetCount;	
+	percentLoaded = percentLoaded / assetCount;
 
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	context.fillStyle = "black";
@@ -393,10 +399,10 @@ function loadResources(initGame){
         	}else{
 	        	this.img.src = "data:image/png;base64," + base64Encode(this.responseText);
         	}
-        	
+
         }
         images[img].request.open("GET", config.resources.textures[img], true);
-        images[img].request.overrideMimeType('text/plain; charset=x-user-defined'); 
+        images[img].request.overrideMimeType('text/plain; charset=x-user-defined');
         images[img].request.send(null);
 	}
 	/*
@@ -406,4 +412,3 @@ function loadResources(initGame){
 	}*/
 	requestAnimationFrame(preloader);
 }
-
