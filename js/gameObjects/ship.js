@@ -8,4 +8,8 @@ class Ship extends Model{
 		this.motionComponent = new SpaceShipMotionComponent(this);
 	}
 
+	setAngularSpeed(params){
+		this.motionComponent.setAngularSpeed(params.x, params.y, params.z);
+	}
+
 }

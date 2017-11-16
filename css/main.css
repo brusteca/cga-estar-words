@@ -1,12 +1,15 @@
 
 @import url('https://fonts.googleapis.com/css?family=Fira+Sans');
 
-/*
 @font-face {
-    font-family: SevenSegment;
-    src: url(sevensegments.ttf);
+    font-family: deathstar;
+    src: url(fonts/deathstar.otf);
 }
-*/
+
+@font-face {
+    font-family: starjout;
+    src: url(fonts/starjhol.ttf);
+}
 
 #photonMappingBox {
     border: 1px solid black;   

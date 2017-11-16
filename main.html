@@ -6,11 +6,16 @@
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 
+	<div class="div-fake-hidden" style="font-family: deathstar; width:0px; height:0px; overflow:hidden;}">l</div>
+	<div class="div-fake-hidden" style="font-family: starjout; width:0px; height:0px; overflow:hidden;}">l</div>
 	<body style="margin: 0px;">
 		<table style="width: 100%; height: 100%;">
 			<tr>
 				<td colspan="2">
-					<canvas id="glCanvas" style="width: 100%; height: 100%;">
+					<canvas id="glCanvas" style="width: 100%; height: 100%; display: none;">
+								Sorry! Your browser does not support HTML5, please update it.
+							</canvas>
+					<canvas id="2dCanvas" style="width: 100%; height: 100%;">
 								Sorry! Your browser does not support HTML5, please update it.
 							</canvas>
 				</td>
@@ -97,9 +102,9 @@
 			for (int ii = 0; ii < 16; ++ii) {
 				normalSurfaceToLightDirections[ii] = normalize(v_surfaceToLightDirections[ii]);
 			}
-			// float light = dot(normal, u_reverseLightDirection) * 0.3;
+			//float lightComponent = dot(normal, u_reverseLightDirection) * 0.3;
 
-			vec3 light = vec3(0, 0, 0);
+			vec3 light = vec3(0.3, 0.3, 0.3);
 			for (int ii = 0; ii < 16; ++ii) {
 				light += u_pointLightColors[ii].rgb * dot(normal, normalSurfaceToLightDirections[ii]);
 			}
@@ -180,7 +185,8 @@
 
 	<script type="text/javascript">
 
-		main();
+		loadResources(main);
+		//main();
 		// requestAnimationFrame(mainLoop);
 
 	</script>

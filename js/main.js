@@ -19,7 +19,13 @@ let world = null;
 const MODEL_BASE_PATH = "resources/models/";
 const TEXTURE_BASE_PATH = "resources/textures/";
 
+let paused = false;
+
 function main() {
+
+	document.getElementById('glCanvas').style.display = "block";
+	document.getElementById('2dCanvas').style.display = "none";
+
 	// Only continue if WebGL is available and working
 	if (!gl) {
 		alert("Unable to initialize WebGL. Your browser or machine may not support it.");
@@ -145,13 +151,16 @@ function main() {
 			let current = timestamp;
 			let elapsed = current - previous;
 			previous = current;
-			lag += elapsed;
 
-			while (lag >= MS_PER_UPDATE) {
-				update(MS_PER_UPDATE);
-				lag -= MS_PER_UPDATE;
+			if (!paused){
+				lag += elapsed;
+
+				while (lag >= MS_PER_UPDATE) {
+					update(MS_PER_UPDATE);
+					lag -= MS_PER_UPDATE;
+				}
+			    draw();				
 			}
-		    draw();
 
 		    requestAnimationFrame(mainLoop);
 		}
@@ -235,7 +244,7 @@ function main() {
 			rotationMatrix,
 			v3.create(scale.x || 1, scale.y || 1, scale.z || 1)
 		);
-		var script = configModel.script || [];
+		var script = config.scripts[configModel.script] || [];
 		var model = instanciateModel(configModel.type, MODEL_BASE_PATH + modelDefaults.file, texture, transform, script);
 		model.color.r = color.r == undefined? 255 : color.r; // default
 		model.color.g = color.g == undefined? 255 : color.g; // is YELLOW
@@ -256,3 +265,142 @@ function main() {
 	}
 
 }
+
+document.onkeyup = function(event){
+	switch(event.keyCode){
+		case 32: // SpaceBar
+			paused = !paused;
+			break;
+	}
+}
+
+document.onkeydown = function(event){
+	switch(event.keyCode){
+		case 32: // SpaceBar
+
+			break;
+		case 37: // left
+
+			break;
+		case 38: // up
+			break;
+		case 39: // right
+			break;
+		case 40: // bottom
+			break;
+			
+	}
+}
+
+
+
+function preloader(){
+	let img;
+	let canvas = document.getElementById('2dCanvas');
+	let context = canvas.getContext('2d');
+	
+	canvas.height = window.innerHeight;
+	canvas.width = window.innerWidth;	percentLoaded = 0;
+	
+	for (img in config.resources.textures){
+		percentLoaded += (images[img].request.percentLoaded == undefined)? 0 : images[img].request.percentLoaded;
+	}
+	/*
+	for (snd in soundSources){
+		percentLoaded += (sounds[snd].request.percentLoaded == undefined)? 0 : sounds[snd].request.percentLoaded;
+	}*/
+	percentLoaded = percentLoaded / assetCount;	
+
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	context.fillStyle = "black";
+	context.fillRect(0, 0, canvas.width, canvas.height);
+
+	var title = "ESTAR WORDS";
+	var textFont = "deathstar";
+	var fontSize = canvas.height * 0.1;
+	context.fillStyle = "red";
+	fontSize = constraintFontToWidth(context, title , textFont, fontSize, canvas.width * 0.9);
+	context.font = (fontSize) + "px " + textFont;
+	context.textAlign = "center";
+	context.textBaseline = "top";
+	context.fillText(title, canvas.width / 2, canvas.height * 0.1);
+
+	context.fillStyle = "red";
+	context.beginPath();
+	context.arc(canvas.width * 0.2, canvas.height * 0.5, canvas.height * 0.02, 0, 2 * Math.PI);
+	context.arc(canvas.width * 0.8, canvas.height * 0.5, canvas.height * 0.02, 0, 2 * Math.PI);
+	context.fill();
+
+	// override with background color
+	context.beginPath();
+	context.fillStyle = "black";
+	context.fillRect(canvas.width * 0.2, canvas.height * 0.48, canvas.width * 0.6, canvas.height * 0.04);
+
+	context.fillStyle = "red";
+	context.fillRect(canvas.width * 0.2, canvas.height * 0.48, canvas.width * 0.6 * percentLoaded, canvas.height * 0.04);
+
+	var fontSize = canvas.height * 0.03;
+	context.font = (fontSize) + "px " + textFont;
+	context.textAlign = "center";
+	context.textBaseline = "top";
+	context.fillText(Math.floor(percentLoaded * 100) + "%", canvas.width * 0.5, canvas.height * 0.55);
+
+	if (loadingImages){
+		requestAnimationFrame(preloader);
+	}
+
+}
+
+let images = [];
+let assetCount = 0;
+let percentLoaded = 0;
+let loadingImages = true;
+let loadedAssets = 0;
+
+function loadResources(initGame){
+	let img;
+
+	for (img in config.resources.textures){
+		assetCount++;
+	}
+	for (img in config.resources.textures){
+		images[img] = document.createElement('img');
+		images[img].source = config.resources.textures[img];
+		images[img].load = function(){
+			loadedAssets++;
+			if (loadedAssets == assetCount){
+				loadingImages = false;
+				initGame();
+			}
+		}
+		images[img].request = new XMLHttpRequest();
+		images[img].request.img = images[img];
+        images[img].request.onprogress = function(event){
+        	if (event.lengthComputable){
+		        this.percentLoaded = event.loaded / event.total;
+		    }
+        }
+        images[img].request.onloadend = function(){
+        	this.img.onload = function(){
+        		this.load();
+        	}
+
+        	if (this.img.source.endsWith('.svg')){
+	        	this.img.src = "data:image/svg+xml;base64," + base64Encode(this.responseText);
+        	}else{
+	        	this.img.src = "data:image/png;base64," + base64Encode(this.responseText);
+        	}
+        	
+        }
+        images[img].request.open("GET", config.resources.textures[img], true);
+        images[img].request.overrideMimeType('text/plain; charset=x-user-defined'); 
+        images[img].request.send(null);
+	}
+	/*
+	for (snd in soundSources){
+		sounds[snd] = {};
+		sounds[snd].sound = new Audio(soundSources[snd]);
+	}*/
+	requestAnimationFrame(preloader);
+}
+

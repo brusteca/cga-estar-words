@@ -8,7 +8,7 @@ class SpaceShipMotionComponent extends MotionComponent{
 
 		this.speed = 0;
 		this.acceleration = 0;
-		this.angularSpeed = v3.create(0, 1, 0);
+		this.angularSpeed = v3.create(0, 0, 0);
 	}
 
 	update(delta){

@@ -132,6 +132,15 @@ function hightlightColor (color) {
 
 /*  MISCELANEOUS FUNCTIONS  */
 
+function constraintFontToWidth(context, text, fontFamily, startSize, width){
+	context.font = startSize + "px " + fontFamily;
+	while(context.measureText(text).width >= width){
+		startSize--;
+		context.font = startSize + "px " + fontFamily;	
+	}
+	return startSize;
+}
+
 /**
 * Downloads the text 'text' in a file named 'filename'
 */
