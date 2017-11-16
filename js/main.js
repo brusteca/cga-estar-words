@@ -152,6 +152,8 @@ function main() {
 			let elapsed = current - previous;
 			previous = current;
 
+			world.handleInput(keyStatus);
+
 			if (!paused){
 				lag += elapsed;
 
@@ -266,30 +268,31 @@ function main() {
 
 }
 
-document.onkeyup = function(event){
-	switch(event.keyCode){
-		case 32: // SpaceBar
-			paused = !paused;
-			break;
+var keyStatus = [];
+
+for (var i = 0; i < 255; i++){
+	keyStatus.push({ pressed : false });
+}
+
+document.onfocus = function(){
+	
+}
+
+document.onblur = function(){
+	for (var i = 0; i < keyStatus.length; i++){
+		keyStatus[i].pressed = false;
+		keyStatus[i].justPressed = false;
 	}
 }
 
+document.onkeyup = function(event){
+	keyStatus[event.keyCode].pressed = false;
+	keyStatus[event.keyCode].justPressed = false;
+}
+
 document.onkeydown = function(event){
-	switch(event.keyCode){
-		case 32: // SpaceBar
-
-			break;
-		case 37: // left
-
-			break;
-		case 38: // up
-			break;
-		case 39: // right
-			break;
-		case 40: // bottom
-			break;
-			
-	}
+	keyStatus[event.keyCode].pressed = true;
+	keyStatus[event.keyCode].justPressed = true;
 }
 
 

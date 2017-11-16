@@ -15,6 +15,9 @@ class World {
 
 		this.skyDome = new SkyDome(new Transform());
 		this.gameObjects.push(this.skyDome);
+
+
+		this.inputComponent = new WorldInputComponent();
 	}
 
 	setLightPositionsAndColors() {
@@ -107,6 +110,14 @@ class World {
 	    var zFar = 20000;
 	    var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 	    return projectionMatrix;
+	}
+
+	handleInput(keyStatus){
+		this.inputComponent.handleInput(keyStatus);
+
+		for (var i = 0; i < keyStatus.length; i++){
+			keyStatus[i].justPressed = false; // used to process inputs only on the first cycle after they are hit
+		}
 	}
 
 }

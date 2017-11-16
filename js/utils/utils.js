@@ -25,7 +25,6 @@ Utils.randomBoolean = function(){
 /* DATE FUNCTIONS */
 
 
-
 /* Given a number of milisecond, returns how many complete days are in the period */
 function numberOfDays(milis){
 	return milis / (1000 * 60 * 60 * 24);
@@ -131,6 +130,27 @@ function hightlightColor (color) {
 
 
 /*  MISCELANEOUS FUNCTIONS  */
+
+KeyEnum = {
+	SPACE : 32,
+	UP : 38,
+	DOWN : 40,
+	LEFT : 37,
+	RIGHT : 39,
+	A : 65,
+	B : 66,
+	C : 67,
+	D : 68, 
+	F : 70,
+	Q : 81,
+	W : 87,
+	E : 69,
+	R : 82,
+	ENTER: 13, 
+	CTRL : 17,
+	ALT : 18,
+	ESC : 27
+}
 
 function constraintFontToWidth(context, text, fontFamily, startSize, width){
 	context.font = startSize + "px " + fontFamily;
