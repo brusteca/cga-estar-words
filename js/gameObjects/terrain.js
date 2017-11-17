@@ -71,12 +71,12 @@ class Terrain extends GameObject {
 					let below = vertices[(row + 1)*len_rows + col];
 					let diag = vertices[(row + 1)*len_rows + col + 1];
 					geometry.push(
-						current[0], current[1], current[2],
 						below[0], below[1], below[2],
+						current[0], current[1], current[2],
 						right[0], right[1], right[2],
 
-						below[0], below[1], below[2],
 						diag[0], diag[1], diag[2],
+						below[0], below[1], below[2],
 						right[0], right[1], right[2],
 					)
 				}
@@ -96,9 +96,16 @@ class Terrain extends GameObject {
 
 		let colors = [];
 		for (let ii = 0, len = geometry.length; ii < len; ++ii) {
-			colors.push(Math.floor(Math.random() * 255));
+			// colors.push(Math.floor(Math.random() * 255));
+			colors.push(128);
 		}
 		colors = new Uint8Array(colors);
+
+		let texcoords = [];
+		for (let ii = 0, len = geometry.length/2; ii < len; ++ii) {
+			texcoords.push(0, 0);
+		}
+		texcoords = new Float32Array(texcoords);
 
 		console.log(geometry.length);
 		console.log(normals.length);
@@ -106,12 +113,12 @@ class Terrain extends GameObject {
 
 		console.log(geometry);
 
-		this.useTexture = false;
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
 			a_position: {numComponents: 3, data: geometry},
 			a_color: {numComponents: 3, data: colors},
 			a_normal: {numComponents: 3, data: normals},
+			a_texcoord: {numComponents: 2, data: texcoords}
 		};
 
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
