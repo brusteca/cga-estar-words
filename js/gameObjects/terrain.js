@@ -9,7 +9,7 @@ class Terrain extends GameObject {
 		let height_data = this.getHeightData(images.heightmap, images.heightmap.width, images.heightmap.height);
 
 		// first transform everything into vectors
-		let vertices = [];
+		let position_buffer = [];
 		let len_rows = images.heightmap.height;
 		let len_cols = images.heightmap.width;
 		let center_coord = {
@@ -23,75 +23,73 @@ class Terrain extends GameObject {
 					height_data[row*len_rows + col],
 					col - center_coord.col
 				);
-				vertices.push(v);
+				position_buffer.push(v);
 			}
 		}
-		console.log(vertices.length);
-		let normals = [];
-		/*
-		// fuck this I'll solve it later
-		let aux = v3.create();
+
+		let index_buffer = [];
 		for (let row = 0; row < len_rows; ++row) {
 			for (let col = 0; col < len_cols; ++col) {
-				let current = vertices[row*len_rows + col];
-				if (row > 0 && row < len_rows - 1 && col > 0 && col < len_cols - 1) {
-					let adjacent = [
-						vertices[(row-1)*len_rows + col-1],
-						vertices[(row-1)*len_rows + col],
-						vertices[(row-1)*len_rows + col+1],
-						vertices[(row)*len_rows + col-1],
-						vertices[(row)*len_rows + col+1],
-						vertices[(row+1)*len_rows + col-1],
-						vertices[(row+1)*len_rows + col],
-						vertices[(row+1)*len_rows + col+1]
-					];
-					let normal = v3.create();
-					for (let ii = 0, len = adjacent.length; ii < len; ++ii) {
-						v3.subtract(current, adjacent[ii], aux);
-						v3.add(normal, aux, normal);
-					}
-					v3.normalize(normal, normal);
-					normals.push(normal);
-				} else {
-					// brute force edge cases because I don't want to think
-					normals.push(v3.create(0, 1, 0));
-				}
-			}
-		}
-		*/
-
-		let geometry = [];
-
-		for (let row = 0; row < len_rows; ++row) {
-			for (let col = 0; col < len_cols; ++col) {
-				let current = vertices[row*len_rows + col];
+				let current = position_buffer[row*len_rows + col];
 				if ((row < (len_rows - 1)) && (col < (len_cols - 1))) {
-					let current = vertices[row*len_rows + col];
-					let right = vertices[row*len_rows + col + 1];
-					let below = vertices[(row + 1)*len_rows + col];
-					let diag = vertices[(row + 1)*len_rows + col + 1];
-					geometry.push(
-						below[0], below[1], below[2],
-						current[0], current[1], current[2],
-						right[0], right[1], right[2],
-
-						diag[0], diag[1], diag[2],
-						below[0], below[1], below[2],
-						right[0], right[1], right[2],
+					let current = row*len_rows + col;
+					let right = row*len_rows + col + 1;
+					let below = (row + 1)*len_rows + col;
+					let diag = (row + 1)*len_rows + col + 1;
+					index_buffer.push(
+						below, current, right,
+						diag, below, right,
 					)
 				}
 			}
 		}
+
+		let geometry = [];
+		for (let ii = 0, len = index_buffer.length; ii < len; ++ii) {
+			let current = position_buffer[index_buffer[ii]];
+			geometry.push(
+				current[0], current[1], current[2]
+			)
+		}
 		geometry = new Float32Array(geometry);
 
-		for (let ii = 0, len = geometry.length / 3; ii < len; ++ii) {
-			normals.push(0, 1, 0);
+		let normal_buffer = [];
+		for (let ii = 0, len = index_buffer.length; ii < len; ii += 3) {
+			normal_buffer.push(v3.create());
 		}
-		// normals = new Float32Array(
-		// 	[].concat.apply([], normals.map(
-		// 		normal =>  [normal[0], normal[1], normal[2]]
-		// 	))
-		// );
+		let normal = v3.create();
+		let aux1 = v3.create();
+		let aux2 = v3.create();
+		for (let ii = 0, len = index_buffer.length; ii < len; ii += 3) {
+			let v0 = position_buffer[index_buffer[ii]];
+			let v1 = position_buffer[index_buffer[ii + 1]];
+			let v2 = position_buffer[index_buffer[ii + 2]];
+
+			v3.subtract(v1, v0, aux1);
+			v3.subtract(v2, v0, aux2);
+			v3.cross(aux1, aux2, normal);
+			v3.normalize(normal, normal);
+
+			v3.add(normal, normal_buffer[index_buffer[ii]],
+				   normal_buffer[index_buffer[ii]]);
+			v3.add(normal, normal_buffer[index_buffer[ii + 1]],
+				   normal_buffer[index_buffer[ii + 1]]);
+			v3.add(normal, normal_buffer[index_buffer[ii + 2]],
+				   normal_buffer[index_buffer[ii + 2]]);
+		}
+		for (let ii = 0, len = index_buffer.length; ii < len; ii += 1) {
+			v3.normalize(normal_buffer[index_buffer[ii]],
+				 		 normal_buffer[index_buffer[ii]]);
+		}
+
+
+		let normals = [];
+		for (let ii = 0, len = index_buffer.length; ii < len; ++ii) {
+			let current = normal_buffer[index_buffer[ii]];
+			normals.push(
+				current[0], current[1], current[2]
+			)
+		}
 		normals = new Float32Array(normals);
 
 		let colors = [];
