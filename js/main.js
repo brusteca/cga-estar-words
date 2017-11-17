@@ -109,17 +109,17 @@ function main() {
 	}
 	*/
 
-	world.gameObjects.push(new Floor(new Transform(
-		v3.create(0,-70,0),
-		m4.create(),
-		v3.create(1, 1, 1)
-	)));
+	// world.gameObjects.push(new Floor(new Transform(
+	// 	v3.create(0,-70,0),
+	// 	m4.create(),
+	// 	v3.create(1, 1, 1)
+	// )));
 
-	let terrain = new Terrain(new Transform(
-		v3.create(0,-70,0),
+	world.gameObjects.push(new Terrain(new Transform(
+		v3.create(0,0,0),
 		m4.create(),
-		v3.create(1, 1, 1)
-	));
+		v3.create(100, 100, 100)
+	)));
 
 	/*
 	var fox = new Model("resources/models/x-wing.obj", "resources/textures/fox_texture.png", new Transform(

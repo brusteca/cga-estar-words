@@ -9,7 +9,7 @@ class GameObject {
 		// el setup de los programas y eso se hacen en los hijos
 		// pero eventualmente mete algo en this.programInfo y this.bufferInfo
 		// fijarse en la clase Efe
-		this.behaviorComponent = new BehaviorComponent([], this);	
+		this.behaviorComponent = new BehaviorComponent([], this);
 		this.motionComponent = new MotionComponent(this);
 	}
 
@@ -48,7 +48,7 @@ class GameObject {
 		// this one transforms to camera coordinates
 		let currentViewMatrix = m4.multiply(
 			viewProjectionMatrix, this.transform.transformMatrix);
-		// TODO: move this to a bunch of light instances inside world
+
 		let pointLightPositions = world.pointLightPositions;
 		let pointLightColors = world.pointLightColors;
 

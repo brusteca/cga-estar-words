@@ -6,6 +6,13 @@ class Efe extends GameObject {
 		// setup GLSL program
 		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"])
 
+		console.log('***');
+		console.log(getGeometry().length);
+		console.log(getColors().length);
+		console.log(getNormals().length);
+		console.log(getTextureCoords().length);
+		console.log('***');
+
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
 			a_position: {numComponents: 3, data: getGeometry()},

@@ -9,7 +9,7 @@ var config = {
 		textures : {
 			falcon : "resources/textures/falcon.jpg",
 			skybox : "resources/textures/space_skybox_1.png",
-			heightmap : "resources/heightmaps/heightmap_Poland_4096x4096_16c.png"
+			heightmap : "resources/heightmaps/heightmap_Poland_4x4_16c.png"
 		}
 	},
 
