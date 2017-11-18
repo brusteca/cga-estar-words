@@ -8,50 +8,62 @@ class Terrain extends GameObject {
 
 		let height_data = this.getHeightData(images.heightmap, images.heightmap.width, images.heightmap.height);
 
+		const texture_scale = 100;
+
 		// first transform everything into vectors
 		let position_buffer = [];
-		let len_rows = images.heightmap.height;
-		let len_cols = images.heightmap.width;
-		let center_coord = {
-			row: len_rows / 2,
-			col: len_cols / 2
-		};
-		for (let row = 0; row < len_rows; ++row) {
-			for (let col = 0; col < len_cols; ++col) {
-				let v = v3.create(
-					row - center_coord.row,
-					height_data[row*len_rows + col],
-					col - center_coord.col
-				);
-				position_buffer.push(v);
+		let texcoord_buffer = [];
+
+		let terrain_width = images.heightmap.height;
+		let terrain_height = images.heightmap.width;
+		let half_terrain_width = terrain_width / 2;
+		let half_terrain_height = terrain_height / 2;
+		for (let row = 0; row < terrain_width; ++row) {
+			for (let col = 0; col < terrain_height; ++col) {
+				let S = col / (terrain_height - 1);
+				let T = row / (terrain_width - 1);
+
+				let X = (S * terrain_width) - half_terrain_width;
+				let Y = height_data[row * terrain_height + col];
+				let Z = (T * terrain_height) - half_terrain_height
+
+				position_buffer.push(v3.create(X, Y, Z));
+				// TODO: v2 class?
+				texcoord_buffer.push(v3.create(S * texture_scale, T * texture_scale, 0));
 			}
 		}
 
 		let index_buffer = [];
-		for (let row = 0; row < len_rows; ++row) {
-			for (let col = 0; col < len_cols; ++col) {
-				let current = position_buffer[row*len_rows + col];
-				if ((row < (len_rows - 1)) && (col < (len_cols - 1))) {
-					let current = row*len_rows + col;
-					let right = row*len_rows + col + 1;
-					let below = (row + 1)*len_rows + col;
-					let diag = (row + 1)*len_rows + col + 1;
+		for (let row = 0; row < terrain_height; ++row) {
+			for (let col = 0; col < terrain_width; ++col) {
+				let current = position_buffer[row*terrain_height + col];
+				if ((row < (terrain_height - 1)) && (col < (terrain_width - 1))) {
+					let current = row*terrain_height + col;
+					let right = row*terrain_height + col + 1;
+					let below = (row + 1)*terrain_height + col;
+					let diag = (row + 1)*terrain_height + col + 1;
 					index_buffer.push(
-						below, current, right,
-						diag, below, right,
+						current, below, right,
+						below, diag, right,
 					)
 				}
 			}
 		}
 
+		let texcoords = [];
 		let geometry = [];
 		for (let ii = 0, len = index_buffer.length; ii < len; ++ii) {
-			let current = position_buffer[index_buffer[ii]];
+			let current_vertex = position_buffer[index_buffer[ii]];
 			geometry.push(
-				current[0], current[1], current[2]
+				current_vertex[0], current_vertex[1], current_vertex[2]
+			);
+			let current_texcoord = texcoord_buffer[index_buffer[ii]];
+			texcoords.push(
+				current_texcoord[0], current_texcoord[1]
 			)
 		}
 		geometry = new Float32Array(geometry);
+		texcoords = new Float32Array(texcoords);
 
 		let normal_buffer = [];
 		for (let ii = 0, len = index_buffer.length; ii < len; ii += 3) {
@@ -99,12 +111,6 @@ class Terrain extends GameObject {
 		}
 		colors = new Uint8Array(colors);
 
-		let texcoords = [];
-		for (let ii = 0, len = geometry.length/2; ii < len; ++ii) {
-			texcoords.push(0, 0);
-		}
-		texcoords = new Float32Array(texcoords);
-
 		console.log(geometry.length);
 		console.log(normals.length);
 		console.log(colors.length);
@@ -120,6 +126,12 @@ class Terrain extends GameObject {
 		};
 
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+
+		this.texture = twgl.createTexture(gl, {
+			src: images.terrain_texture,
+			wrap: gl.REPEAT,
+			auto: true
+		});
 
 	};
 

@@ -116,9 +116,9 @@ function main() {
 	// )));
 
 	world.gameObjects.push(new Terrain(new Transform(
-		v3.create(0,-220,0),
+		v3.create(0,-220,-500),
 		m4.create(),
-		v3.create(5, 300, 5)
+		v3.create(5, 350, 5)
 	)));
 
 	/*
