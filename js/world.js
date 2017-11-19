@@ -2,6 +2,10 @@
 
 class World {
 	constructor(instructions) {
+		this.physics = new CANNON.World();
+		this.physics.gravity.set(0, -9.82, 0); // m/s²
+		// this.physics.gravity.set(0, 0, -9.82); // m/s²
+
 		this.gameObjects = [];
 		this.pointLights = [];
 		this.events = new BehaviorComponent(instructions, this);
@@ -37,31 +41,32 @@ class World {
 
 	}
 
-	update(delta){
-		this.events.update(delta);
+	update(delta_seconds){
+		this.physics.step(delta_seconds);
+		this.events.update(delta_seconds);
 
 		for (let ii = 0, len = this.pointLights.length; ii < len; ++ii){
-			this.pointLights[ii].update(delta);
+			this.pointLights[ii].update(delta_seconds);
 		}
 		// after updating the lights, set the internal cache
 		this.setLightPositionsAndColors();
 
 		for (let ii = 0, len = this.gameObjects.length; ii < len; ++ii) {
-			this.gameObjects[ii].update(delta);
+			this.gameObjects[ii].update(delta_seconds);
 		}
 
-		this.updateCamera(delta);
+		this.updateCamera(delta_seconds);
 	}
 
-	updateCamera(delta){
+	updateCamera(delta_seconds){
 		// to do: don't waste so much memory...
 
 		// to do: could improve accuracy using the method of the trapecio (no clue how to translate TRAPECIO)
-		v3.add(this.cameraSpeed, v3.mulScalar(this.cameraAcceleration, delta), this.cameraSpeed);
+		v3.add(this.cameraSpeed, v3.mulScalar(this.cameraAcceleration, delta_seconds), this.cameraSpeed);
 
-		v3.add(this.cameraPosition, v3.mulScalar(this.cameraSpeed, delta), this.cameraPosition);
-		v3.add(this.viewportCenter, v3.mulScalar(this.cameraSpeed, delta), this.viewportCenter);
-		v3.add(this.skyDome.transform.position, v3.mulScalar(this.cameraSpeed, delta), this.skyDome.transform.position);
+		v3.add(this.cameraPosition, v3.mulScalar(this.cameraSpeed, delta_seconds), this.cameraPosition);
+		v3.add(this.viewportCenter, v3.mulScalar(this.cameraSpeed, delta_seconds), this.viewportCenter);
+		v3.add(this.skyDome.transform.position, v3.mulScalar(this.cameraSpeed, delta_seconds), this.skyDome.transform.position);
 		this.skyDome.transform.calculateTransformMatrix();
 	}
 
@@ -80,7 +85,7 @@ class World {
 	setCameraRotation(){
 		this.cameraRotation[0] = params.x;
 		this.cameraRotation[1] = params.y;
-		this.cameraRotation[2] = params.z;	
+		this.cameraRotation[2] = params.z;
 	}
 
 	setCameraRotationSpeed(){

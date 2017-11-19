@@ -8,30 +8,26 @@ class Transform {
 		this.rotation = rotation || m4.create();
 		this.scale = scale || v3.create(1, 1, 1);
 
+		this.transformMatrix = m4.create();
 		this.calculateTransformMatrix();
 	}
 
 	setPosition(newPosition){
-		this.position = newPosition;	
+		this.position = newPosition;
 	}
 
 	setRotation(newRotation){
-		this.rotation = newRotation;	
+		this.rotation = newRotation;
 	}
 
 	setScale(newScale){
-		this.scale = newScale;	
+		this.scale = newScale;
 	}
 
 	calculateTransformMatrix(){
-		let transformMatrix = m4.identity();
-		transformMatrix = m4.translate(
-			transformMatrix, this.position, transformMatrix);
-		transformMatrix = m4.multiply(
-			transformMatrix, this.rotation, transformMatrix);
-		transformMatrix = m4.scale(
-			transformMatrix, this.scale, transformMatrix);
-
-		this.transformMatrix = transformMatrix;	
+		m4.identity(this.transformMatrix);
+		m4.translate(this.transformMatrix, this.position, this.transformMatrix);
+		m4.multiply(this.transformMatrix, this.rotation, this.transformMatrix);
+		m4.scale(this.transformMatrix, this.scale, this.transformMatrix);
 	}
 }

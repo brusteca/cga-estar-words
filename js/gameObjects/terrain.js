@@ -14,11 +14,15 @@ class Terrain extends GameObject {
 		let position_buffer = [];
 		let texcoord_buffer = [];
 
+		// used for physics
+		let heightfield_matrix = []
+
 		let terrain_width = images.heightmap.height;
 		let terrain_height = images.heightmap.width;
 		let half_terrain_width = terrain_width / 2;
 		let half_terrain_height = terrain_height / 2;
 		for (let row = 0; row < terrain_width; ++row) {
+			let heightfield_matrix_row = [];
 			for (let col = 0; col < terrain_height; ++col) {
 				let S = col / (terrain_height - 1);
 				let T = row / (terrain_width - 1);
@@ -30,7 +34,10 @@ class Terrain extends GameObject {
 				position_buffer.push(v3.create(X, Y, Z));
 				// TODO: v2 class?
 				texcoord_buffer.push(v3.create(S * texture_scale, T * texture_scale, 0));
+
+				heightfield_matrix_row.push(height_data[row * terrain_height + col] * this.transform.scale[1]);
 			}
+			heightfield_matrix.push(heightfield_matrix_row);
 		}
 
 		let index_buffer = [];
@@ -111,12 +118,6 @@ class Terrain extends GameObject {
 		}
 		colors = new Uint8Array(colors);
 
-		console.log(geometry.length);
-		console.log(normals.length);
-		console.log(colors.length);
-
-		console.log(geometry);
-
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
 			a_position: {numComponents: 3, data: geometry},
@@ -132,6 +133,28 @@ class Terrain extends GameObject {
 			wrap: gl.REPEAT,
 			auto: true
 		});
+
+		// Create a terrain in cannon
+
+		// Create the heightfield
+		var hfShape = new CANNON.Heightfield(heightfield_matrix, {
+			elementSize: this.transform.scale[0]
+		});
+		var hfBody = new CANNON.Body({
+			mass: 0,
+			position: new CANNON.Vec3(
+				this.transform.position[0],
+				this.transform.position[1],
+				this.transform.position[2]
+			)
+		});
+		hfBody.addShape(hfShape);
+		// hfBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+		hfBody.quaternion.setFromEuler(Math.PI/2, 0, 0);
+		world.physics.addBody(hfBody);
+		this.physicsComponent = new PhysicsComponent(this, hfBody);
+		console.log(hfBody);
+
 
 	};
 
@@ -157,7 +180,6 @@ class Terrain extends GameObject {
 		for (let ii = 0, len = pix.length; ii < len; ii += (4)) {
 			let all = pix[ii] + pix[ii+1] + pix[ii+2];
 			data[jj++] = all / (3 * 255);
-			// data[jj++] = pix[ii];
 		}
 
 		return data;

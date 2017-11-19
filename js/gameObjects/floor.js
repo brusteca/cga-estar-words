@@ -21,6 +21,25 @@ class Floor extends GameObject {
 			wrap: gl.REPEAT,
 			auto: true
 		});
+
+		// Create a plane
+		var groundBody = new CANNON.Body({
+		    mass: 0, // mass == 0 makes the body static
+			position: new CANNON.Vec3(
+				this.transform.position[0],
+				this.transform.position[1],
+				this.transform.position[2]
+			), // m
+		});
+		var groundShape = new CANNON.Plane();
+		groundBody.addShape(groundShape);
+		world.physics.addBody(groundBody);
+		groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+		this.physicsComponent = new PhysicsComponent(this, groundBody);
+	}
+
+	update(delta) {
+		this.physicsComponent.update();
 	}
 
 	getGeometry() {

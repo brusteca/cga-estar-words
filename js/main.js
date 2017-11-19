@@ -103,22 +103,29 @@ function main() {
 		let x = Math.cos(angle) * radius;
 		let y = Math.sin(angle) * radius;
 
-		world.gameObjects.push(new Efe(new Transform(
+		world.gameObjects.push(here(new Transform(
 			v3.add(center, v3.create(x, 0, y))
 		)));
 	}
 	*/
 
+	world.gameObjects.push(new Sphere(new Transform(
+		v3.create(0, 10, 10),
+		m4.create(),
+		v3.create(0.1, 0.1, 0.1)
+	)));
+
 	// world.gameObjects.push(new Floor(new Transform(
-	// 	v3.create(0,-70,0),
+	// 	v3.create(0,-1,0),
 	// 	m4.create(),
-	// 	v3.create(1, 1, 1)
+	// 	v3.create(0.1, 0.1, 0.1)
 	// )));
 
 	world.gameObjects.push(new Terrain(new Transform(
-		v3.create(0,-220,-500),
+		v3.create(0,-350,0),
+		// v3.create(0,0,0),
 		m4.create(),
-		v3.create(5, 350, 5)
+		v3.create(10, 350, 10)
 	)));
 
 	/*
