@@ -137,6 +137,7 @@ class Terrain extends GameObject {
 		// Create a terrain in cannon
 
 		// Create the heightfield
+		/*
 		var hfShape = new CANNON.Heightfield(heightfield_matrix, {
 			elementSize: this.transform.scale[0]
 		});
@@ -154,6 +155,7 @@ class Terrain extends GameObject {
 		world.physics.addBody(hfBody);
 		this.physicsComponent = new PhysicsComponent(this, hfBody);
 		console.log(hfBody);
+		*/
 
 
 	};
