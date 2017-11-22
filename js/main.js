@@ -40,8 +40,8 @@ function main() {
 
 	let numLights = 16;
 	let pointLightPositions = [
-		-80, 30, 58,
-		-250, 60, 50,
+		-30, 60, 40,
+		-30, 60, -40,
 		-550, 60, 150,
 		0, 0, 0,
 		0, 0, 0,
@@ -58,9 +58,9 @@ function main() {
 		0, 0, 0
 	];
 	let pointLightColors = [
-		0.3, 0, 0.6,
-		0, 0.5, 0,
-		0.8, 0, 0,
+		0.0, 0.0, 0.5,
+		0.0, 0.5, 0.0,
+		0.8, 0.0, 0.3,
 		0, 0, 0,
 		0, 0, 0,
 		0, 0, 0,
@@ -75,6 +75,24 @@ function main() {
 		0, 0, 0,
 		0, 0, 0
 	];
+	let pointLightMaxDistances = [
+		10000,
+		10000,
+		10000,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0
+	];
 	for (let ii = 0; ii < numLights*3; ii+=3) {
 		world.pointLights.push(new PointLight(
 			new Transform(
@@ -88,7 +106,8 @@ function main() {
 				pointLightColors[ii],
 				pointLightColors[ii+1],
 				pointLightColors[ii+2]
-			]
+			],
+			pointLightMaxDistances[ii/3]
 		));
 	}
 
@@ -115,18 +134,18 @@ function main() {
 		v3.create(0.1, 0.1, 0.1)
 	)));
 
-	// world.gameObjects.push(new Floor(new Transform(
-	// 	v3.create(0,-1,0),
-	// 	m4.create(),
-	// 	v3.create(0.1, 0.1, 0.1)
-	// )));
-
-	world.gameObjects.push(new Terrain(new Transform(
-		v3.create(0,-350,0),
-		// v3.create(0,0,0),
+	world.gameObjects.push(new Floor(new Transform(
+		v3.create(0,-10,0),
 		m4.create(),
-		v3.create(10, 350, 10)
+		v3.create(1, 1, 1)
 	)));
+
+	// world.gameObjects.push(new Terrain(new Transform(
+	// 	v3.create(0,-350,0),
+	// 	// v3.create(0,0,0),
+	// 	m4.create(),
+	// 	v3.create(10, 350, 10)
+	// )));
 
 	/*
 	var fox = new Model("resources/models/x-wing.obj", "resources/textures/fox_texture.png", new Transform(

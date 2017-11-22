@@ -60,6 +60,7 @@ class GameObject {
 			u_cameraPosition: world.getCameraPosition(),
 			u_pointLightPositions: world.pointLightPositions,
 			u_pointLightColors: world.pointLightColors,
+			u_pointLightMaxDistances: world.pointLightMaxDistances,
 			u_texture: this.texture,
 			u_useTexture : (this.texture != null)
 		};

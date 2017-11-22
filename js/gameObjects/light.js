@@ -17,11 +17,20 @@ class Light extends GameObject {
 };
 
 class PointLight extends Light {
+	constructor(transform, color, max_distance) {
+		super(transform, color);
+		this.max_distance = max_distance;
+	}
+
 	getPosition(){
 		return [
 			this.transform.transformMatrix[12],
 			this.transform.transformMatrix[13],
 			this.transform.transformMatrix[14]
 		];
+	}
+
+	getMaxDistance(){
+		return this.max_distance;
 	}
 };

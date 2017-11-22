@@ -37,8 +37,11 @@ class World {
 				pointLight =>  pointLight.getColor()
 			))
 		);
-
-
+		this.pointLightMaxDistances = new Float32Array(
+			this.pointLights.map(
+				pointLight =>  pointLight.getMaxDistance()
+			)
+		);
 	}
 
 	update(delta_seconds){
