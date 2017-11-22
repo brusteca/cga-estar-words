@@ -1,14 +1,12 @@
 'use strict';
 
 class WorldInputComponent extends InputComponent {
-	constructor() {
-		super();
+	constructor(owner) {
+		super(owner);
 	}
 
-	handleInput(keyStatus){
-		//super.handleInput(keyStatus); <- not necessary for the moment
-
-		if (keyStatus[KeyEnum.SPACE].justPressed){
+	handleInput(keyStatus, delta){
+		if (keyStatus[KeyEnum.P].justPressed){
 			paused = !paused; // generic space key -> pause the game
 		}
 	}

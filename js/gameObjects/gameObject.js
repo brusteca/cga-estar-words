@@ -11,6 +11,11 @@ class GameObject {
 		// fijarse en la clase Efe
 		this.behaviorComponent = new BehaviorComponent([], this);
 		this.motionComponent = new MotionComponent(this);
+		this.inputComponent = new InputComponent(this);
+	}
+
+	handleInput(keyStatus, delta){
+		this.inputComponent.handleInput(keyStatus, delta);
 	}
 
 	update(delta) {
@@ -74,6 +79,8 @@ class GameObject {
 		this.motionComponent.setSpeed(params.speed);
 	}
 
-
+	translate(direction){
+		v3.add(this.transform.position, direction, this.transform.position);
+	}
 
 }

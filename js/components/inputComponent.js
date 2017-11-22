@@ -1,8 +1,8 @@
 'use strict';
 
 class InputComponent {
-	constructor() {
-		
+	constructor(owner) {
+		this.owner = owner;
 	}
 
 	handleInput(keyStatus){

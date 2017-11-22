@@ -284,7 +284,7 @@ function main() {
 		model.color.g = color.g == undefined? 255 : color.g; // is YELLOW
 		model.color.b = color.b == undefined? 0   : color.b;
 
-		model.frontDirection = v3.create(modelDefaults.front.x, modelDefaults.front.y, modelDefaults.front.z);
+		model.frontDirection = v3.normalize(v3.create(modelDefaults.front.x, modelDefaults.front.y, modelDefaults.front.z));
 		return model;
 	}
 

@@ -10,16 +10,11 @@ class World {
 		this.pointLights = [];
 		this.events = new BehaviorComponent(instructions, this);
 
-		// camera and viewport information
-		this.cameraPosition = v3.create(60,0,0);
-		this.cameraSpeed = v3.create(0,0,0);
-		this.cameraAcceleration = v3.create(0,0,0);
-		this.viewportCenter = v3.create(50,0,0);
-		this.viewportUp = v3.create(0,1,0);
+		this.camera = new Camera(new Transform(v3.create(60,0,0,)), this, v3.create(-1, 0, 0), 10);
+		this.gameObjects.push(this.camera);
 
 		this.skyDome = new SkyDome(new Transform());
 		this.gameObjects.push(this.skyDome);
-
 
 		this.inputComponent = new WorldInputComponent();
 	}
@@ -58,19 +53,6 @@ class World {
 			this.gameObjects[ii].update(delta_seconds);
 		}
 
-		this.updateCamera(delta_seconds);
-	}
-
-	updateCamera(delta_seconds){
-		// to do: don't waste so much memory...
-
-		// to do: could improve accuracy using the method of the trapecio (no clue how to translate TRAPECIO)
-		v3.add(this.cameraSpeed, v3.mulScalar(this.cameraAcceleration, delta_seconds), this.cameraSpeed);
-
-		v3.add(this.cameraPosition, v3.mulScalar(this.cameraSpeed, delta_seconds), this.cameraPosition);
-		v3.add(this.viewportCenter, v3.mulScalar(this.cameraSpeed, delta_seconds), this.viewportCenter);
-		v3.add(this.skyDome.transform.position, v3.mulScalar(this.cameraSpeed, delta_seconds), this.skyDome.transform.position);
-		this.skyDome.transform.calculateTransformMatrix();
 	}
 
 	setCameraSpeed(params){
@@ -100,15 +82,15 @@ class World {
 	}
 
 	getCameraPosition(){
-		return this.cameraPosition;
+		return this.camera.transform.position;
 	}
 
 	getViewportCenter(){
-	    return this.viewportCenter;
+	    return this.camera.viewportCenter;
 	}
 
 	getViewportUpVector(){
-	    return this.viewportUp;
+	    return this.camera.viewportUp;
 	}
 
 	getProjectionMatrix(){
@@ -122,6 +104,10 @@ class World {
 
 	handleInput(keyStatus){
 		this.inputComponent.handleInput(keyStatus);
+
+		for (var i = 0; i < this.gameObjects.length; i++){
+			this.gameObjects[i].handleInput(keyStatus);
+		}
 
 		for (var i = 0; i < keyStatus.length; i++){
 			keyStatus[i].justPressed = false; // used to process inputs only on the first cycle after they are hit

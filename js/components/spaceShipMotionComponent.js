@@ -24,7 +24,7 @@ class SpaceShipMotionComponent extends MotionComponent{
 		var frontDirection = v3.copy(this.owner.getFrontDirection());
 		m4.transformDirection(this.owner.transform.rotation, frontDirection, frontDirection);
 
-		v3.add(this.owner.transform.position, v3.mulScalar(frontDirection, this.speed), this.owner.transform.position);
+		this.owner.translate(v3.mulScalar(frontDirection, this.speed));
 
 		this.owner.transform.calculateTransformMatrix();
 	}
