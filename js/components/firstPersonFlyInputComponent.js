@@ -12,28 +12,30 @@ class FirstPersonFlyInputComponent extends InputComponent {
 		}else{
 			this.owner.motionComponent.setSpeed(0);
 		}
-		var rotationSpeed = 1; // to do: ask to owner?
-		var rotatedUp = v3.create(0,0,0);
-		m4.transformDirection(this.owner.transform.rotation, this.owner.getUpDirection(), rotatedUp);
-		if (keyStatus[KeyEnum.LEFT].pressed){
-			// calculate where the up is so we can rotate relative to it
+		var rotationSpeed = 0;
+		if (keyStatus[KeyEnum.LEFT].pressed || keyStatus[KeyEnum.RIGHT].pressed || 
+			keyStatus[KeyEnum.UP].pressed || keyStatus[KeyEnum.DOWN].pressed){
 			rotationSpeed = 1;
-		}else if (keyStatus[KeyEnum.RIGHT].pressed){
-			rotationSpeed = -1;
-		}else {
-			rotationSpeed = 0;
 		}
-		this.owner.motionComponent.angularSpeed[0] = rotatedUp[0] * rotationSpeed;
-		this.owner.motionComponent.angularSpeed[1] = rotatedUp[1] * rotationSpeed;
-		this.owner.motionComponent.angularSpeed[2] = rotatedUp[2] * rotationSpeed;
 
-		if (keyStatus[KeyEnum.UP].pressed){
-			this.owner.motionComponent.angularSpeed[2] = -1; // careful, this is in radians
-		}else if (keyStatus[KeyEnum.DOWN].pressed){
-			this.owner.motionComponent.angularSpeed[2] = 1;
-		}else {
-			this.owner.motionComponent.angularSpeed[2] = 0;
+		var angularSpeedDirection = v3.create(0,0,0);
+		var upDirection = this.owner.getUpDirection();
+		var leftDirection = this.owner.getLeftDirection();
+		if (keyStatus[KeyEnum.LEFT].pressed){
+			v3.subtract(angularSpeedDirection, upDirection, angularSpeedDirection);
+			//angularSpeedDirection[1] = -1;
+		}else if (keyStatus[KeyEnum.RIGHT].pressed){
+			//angularSpeedDirection[1] = 1;
+			v3.add(angularSpeedDirection, upDirection, angularSpeedDirection);
 		}
+		if (keyStatus[KeyEnum.UP].pressed){
+			v3.add(angularSpeedDirection, leftDirection, angularSpeedDirection);
+		}else if (keyStatus[KeyEnum.DOWN].pressed){
+			v3.subtract(angularSpeedDirection, leftDirection, angularSpeedDirection);
+		}
+
+		this.owner.motionComponent.angularSpeedDirection = angularSpeedDirection;
+		this.owner.motionComponent.angularSpeed = rotationSpeed; 
 	}
 
 }
