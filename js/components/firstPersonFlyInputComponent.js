@@ -7,7 +7,7 @@ class FirstPersonFlyInputComponent extends InputComponent {
 	}
 
 	handleInput(keyStatus, delta){
-		if (keyStatus[KeyEnum.SPACE].pressed){
+		if (keyStatus[KeyEnum.W].pressed){
 			this.owner.motionComponent.setSpeed(1); // this shooould depend on the owner, right?
 		}else{
 			this.owner.motionComponent.setSpeed(0);
