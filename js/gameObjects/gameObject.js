@@ -11,11 +11,13 @@ class GameObject {
 		// fijarse en la clase Efe
 		this.behaviorComponent = new BehaviorComponent([], this);
 		this.motionComponent = new MotionComponent(this);
-		this.inputComponent = new InputComponent(this);
+		this.inputComponents = [];
 	}
 
 	handleInput(keyStatus, delta){
-		this.inputComponent.handleInput(keyStatus, delta);
+		for (var i = 0; i < this.inputComponents.length; i++){
+			this.inputComponents[i].handleInput(keyStatus, delta);
+		}
 	}
 
 	update(delta) {

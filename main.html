@@ -207,6 +207,42 @@
 		}
 	</script>
 
+	<script id="3d-vertex-shader-laser" type="x-shader/x-vertex">
+		attribute vec4 a_position;
+		attribute vec3 a_normal;
+
+		uniform vec4 u_color;
+
+		uniform mat4 u_world;
+		uniform mat4 u_worldViewProjection;
+		uniform mat4 u_worldInverseTranspose;
+
+		varying vec4 v_color;
+		varying vec3 v_normal;
+
+		void main() {
+			// Multiply the position by the matrix.
+			gl_Position = u_worldViewProjection * a_position;
+
+			// Pass the color to the fragment shader.
+			v_color = u_color;
+
+			// orient the normals and pass to the fragment shader
+			v_normal = mat3(u_worldInverseTranspose) * a_normal;
+		}
+	</script>
+	<script id="3d-fragment-shader-laser" type="x-shader/x-fragment">
+		precision mediump float;
+
+		// Passed in from the vertex shader.
+		varying vec4 v_color;
+		varying vec3 v_normal; // gonna need this
+
+		void main() {
+			gl_FragColor = v_color;
+		}
+	</script>
+
 	<!-- vertex shader -->
 	<script id="3d-vertex-shader-terrain" type="x-shader/x-vertex">
 		attribute vec4 a_position;
@@ -265,6 +301,7 @@
 	<script type="text/javascript" src="js/components/inputComponent.js"></script>
 	<script type="text/javascript" src="js/components/worldInputComponent.js"></script>
 	<script type="text/javascript" src="js/components/firstPersonFlyInputComponent.js"></script>
+	<script type="text/javascript" src="js/components/laserShootingInputComponent.js"></script>
 
 	<script type="text/javascript" src="js/components/motionComponent.js"></script>
 	<script type="text/javascript" src="js/components/spaceShipMotionComponent.js"></script>
@@ -279,6 +316,7 @@
 	<!-- Shapes -->
 	<script type="text/javascript" src="js/gameObjects/skyDome.js"></script>
 	<script type="text/javascript" src="js/gameObjects/model.js"></script>
+	<script type="text/javascript" src="js/gameObjects/laserShot.js"></script>
 	<script type="text/javascript" src="js/gameObjects/ship.js"></script>
 	<script type="text/javascript" src="js/gameObjects/efe.js"></script>
 	<script type="text/javascript" src="js/gameObjects/sphere.js"></script>

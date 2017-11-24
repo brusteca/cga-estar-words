@@ -11,6 +11,7 @@ var config = {
 			skybox : "resources/textures/space_skybox_1.png",
 			heightmap : "resources/heightmaps/heightmap_Poland_512x512_16c.png",
 			terrain_texture: 'resources/textures/Dirt00seamless_1024x1024.jpg',
+			floor_texture : 'resources/textures/dea60ce67a5bb55100ba6a7b1b1620fe.jpg'
 		}
 	},
 
@@ -43,6 +44,9 @@ var config = {
 		{ time : 7, function : "setCameraAcceleration", parameters : { x : 0, y : 0, z : 0} },
 		{ time : 7, function : "setCameraSpeed", parameters : { x : 0, y : 0, z : 0} }
 		*/
-	]
+	],
+
+	// generic constants
+	laserSpeed : 50
 
 }

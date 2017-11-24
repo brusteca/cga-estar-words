@@ -17,7 +17,7 @@ class Floor extends GameObject {
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
 		this.texture = twgl.createTexture(gl, {
-			src: 'resources/textures/dea60ce67a5bb55100ba6a7b1b1620fe.jpg',
+			src: images.floor_texture,
 			wrap: gl.REPEAT,
 			auto: true
 		});
