@@ -14,15 +14,12 @@ class Terrain extends GameObject {
 		let position_buffer = [];
 		let texcoord_buffer = [];
 
-		// used for physics
-		let heightfield_matrix = []
-
 		let terrain_width = images.heightmap.height;
 		let terrain_height = images.heightmap.width;
 		let half_terrain_width = terrain_width / 2;
 		let half_terrain_height = terrain_height / 2;
+
 		for (let row = 0; row < terrain_width; ++row) {
-			let heightfield_matrix_row = [];
 			for (let col = 0; col < terrain_height; ++col) {
 				let S = col / (terrain_height - 1);
 				let T = row / (terrain_width - 1);
@@ -34,11 +31,9 @@ class Terrain extends GameObject {
 				position_buffer.push(v3.create(X, Y, Z));
 				// TODO: v2 class?
 				texcoord_buffer.push(v3.create(S * texture_scale, T * texture_scale, 0));
-
-				heightfield_matrix_row.push(height_data[row * terrain_height + col] * this.transform.scale[1]);
 			}
-			heightfield_matrix.push(heightfield_matrix_row);
 		}
+
 
 		let index_buffer = [];
 		for (let row = 0; row < terrain_height; ++row) {
@@ -98,7 +93,7 @@ class Terrain extends GameObject {
 		}
 		for (let ii = 0, len = index_buffer.length; ii < len; ii += 1) {
 			v3.normalize(normal_buffer[index_buffer[ii]],
-				 		 normal_buffer[index_buffer[ii]]);
+						  normal_buffer[index_buffer[ii]]);
 		}
 
 
@@ -117,6 +112,12 @@ class Terrain extends GameObject {
 			colors.push(128);
 		}
 		colors = new Uint8Array(colors);
+
+
+		this.position_buffer = position_buffer;
+		this.texcoord_buffer = texcoord_buffer;
+		this.index_buffer = index_buffer;
+		this.normal_buffer = normal_buffer;
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
@@ -185,5 +186,72 @@ class Terrain extends GameObject {
 		}
 
 		return data;
+	}
+
+	getHeightAt(position){
+		let height = -Number.MAX_SAFE_INTEGER;
+		let heightmap = images.heightmap;
+		let position_buffer = this.position_buffer;
+		// Check if the terrain dimensions are valid
+		if (heightmap.width < 2 || heightmap.height < 2) {
+			return height;
+		}
+		// Width and height of the terrain in world units
+		// let terrain_width = (heightmap.height - 1)  * this.transform.scale[1];
+		// let terrain_height = (heightmap.width - 1)  * this.transform.scale[1];
+		// let terrain_width = (heightmap.height - 1);
+		// let terrain_height = (heightmap.width - 1);
+		let terrain_width = (heightmap.height);
+		let terrain_height = (heightmap.width);
+		let half_terrain_width = terrain_width / 2.0;
+		let half_terrain_height = terrain_height / 2.0;
+
+		// Multiple the position by the inverse of the terrain matrix
+		// to get the position in terrain local space
+		let terrain_position = m4.transformPoint(this.transform.inverseTransformMatrix, position);
+
+		// Calculate an offset and scale to get the vertex indices
+		let offset = v3.create(half_terrain_width, 0, half_terrain_height);
+		// Get the 4 vertices that make up the triangle we're over
+		let vertex_indices = v3.add(terrain_position, offset, offset);
+		// vertex_indices = terrain_position;
+		let u0 = Math.floor(vertex_indices[0]);
+		let u1 = u0 + 1;
+		let v0 = Math.floor(vertex_indices[2]);
+		let v1 = v0 + 1;
+
+		if (u0 >= 0 && u1 < heightmap.width && v0 >= 0 && v1 < heightmap.height) {
+			// Top-left vertex
+			let p00 = position_buffer[(v0 * heightmap.height) + u0];
+			// Top-right vertex
+			let p10 = position_buffer[(v0 * heightmap.height) + u1];
+			// Bottom-left vertex
+			let p01 = position_buffer[(v1 * heightmap.height) + u0];
+			 // Bottom-right vertex
+			let p11 = position_buffer[(v1 * heightmap.height) + u1];
+
+			// Which triangle are we over?
+			let percentU = vertex_indices[0] - u0;
+			let percentV = vertex_indices[2] - v0;
+
+			let dU, dV;
+
+			if (percentU > percentV) {
+				// Top triangle
+				dU = v3.subtract(p10, p00);
+				dV = v3.subtract(p11, p10);
+			} else {
+				// Bottom triangle
+				dU = v3.subtract(p11, p01);
+				dV = v3.subtract(p01, p00);
+			}
+
+			v3.mulScalar(dU, percentU, dU);
+			v3.mulScalar(dV, percentV, dV);
+			let height_position = v3.add(v3.add(dU, dV, dU), p00, dU);
+			m4.transformPoint(this.transform.transformMatrix, height_position, height_position);
+			height = height_position[1];
+		}
+		return height;
 	}
 }

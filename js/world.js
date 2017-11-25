@@ -19,6 +19,11 @@ class World {
 		this.inputComponent = new WorldInputComponent();
 	}
 
+	setTerrain(terrain) {
+		this.terrain = terrain;
+		this.gameObjects.push(terrain);
+	}
+
 	setLightPositionsAndColors() {
 		// after updating the lights, set the internal cache
 		// TODO: don't make a new instance each time

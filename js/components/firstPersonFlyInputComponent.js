@@ -9,11 +9,13 @@ class FirstPersonFlyInputComponent extends InputComponent {
 	handleInput(keyStatus, delta){
 		if (keyStatus[KeyEnum.W].pressed){
 			this.owner.motionComponent.setSpeed(1); // this shooould depend on the owner, right?
+		}else if (keyStatus[KeyEnum.S].pressed){
+			this.owner.motionComponent.setSpeed(-1); // this shooould depend on the owner, right?
 		}else{
 			this.owner.motionComponent.setSpeed(0);
 		}
 		var rotationSpeed = 0;
-		if (keyStatus[KeyEnum.LEFT].pressed || keyStatus[KeyEnum.RIGHT].pressed || 
+		if (keyStatus[KeyEnum.LEFT].pressed || keyStatus[KeyEnum.RIGHT].pressed ||
 			keyStatus[KeyEnum.UP].pressed || keyStatus[KeyEnum.DOWN].pressed || keyStatus[KeyEnum.Q].pressed
 			|| keyStatus[KeyEnum.E].pressed){
 			rotationSpeed = 1;
@@ -36,14 +38,14 @@ class FirstPersonFlyInputComponent extends InputComponent {
 			v3.subtract(angularSpeedDirection, leftDirection, angularSpeedDirection);
 		}
 		if (keyStatus[KeyEnum.Q].pressed){
-			v3.add(angularSpeedDirection, frontDirection, angularSpeedDirection);	
+			v3.add(angularSpeedDirection, frontDirection, angularSpeedDirection);
 		}
 		if (keyStatus[KeyEnum.E].pressed){
 			v3.subtract(angularSpeedDirection, frontDirection, angularSpeedDirection);
 		}
 
 		this.owner.motionComponent.angularSpeedDirection = angularSpeedDirection;
-		this.owner.motionComponent.angularSpeed = rotationSpeed; 
+		this.owner.motionComponent.angularSpeed = rotationSpeed;
 	}
 
 }

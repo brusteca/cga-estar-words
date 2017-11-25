@@ -134,18 +134,18 @@ function main() {
 		v3.create(0.1, 0.1, 0.1)
 	)));
 
-	world.gameObjects.push(new Floor(new Transform(
-		v3.create(0,-10,0),
-		m4.create(),
-		v3.create(1, 1, 1)
-	)));
-
-	// world.gameObjects.push(new Terrain(new Transform(
-	// 	v3.create(0,-350,0),
-	// 	// v3.create(0,0,0),
+	// world.gameObjects.push(new Floor(new Transform(
+	// 	v3.create(0,-10,0),
 	// 	m4.create(),
-	// 	v3.create(10, 350, 10)
+	// 	v3.create(1, 1, 1)
 	// )));
+
+	world.setTerrain(new Terrain(new Transform(
+		v3.create(0,-350,0),
+		// v3.create(0,0,0),
+		m4.create(),
+		v3.create(10, 350, 10)
+	)));
 
 	/*
 	var fox = new Model("resources/models/x-wing.obj", "resources/textures/fox_texture.png", new Transform(

@@ -9,6 +9,7 @@ class Transform {
 		this.scale = scale || v3.create(1, 1, 1);
 
 		this.transformMatrix = m4.create();
+		this.inverseTransformMatrix = m4.create();
 		this.calculateTransformMatrix();
 	}
 
@@ -29,5 +30,6 @@ class Transform {
 		m4.translate(this.transformMatrix, this.position, this.transformMatrix);
 		m4.multiply(this.transformMatrix, this.rotation, this.transformMatrix);
 		m4.scale(this.transformMatrix, this.scale, this.transformMatrix);
+		m4.inverse(this.transformMatrix, this.inverseTransformMatrix);
 	}
 }
