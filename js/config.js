@@ -4,14 +4,21 @@ var config = {
 	resources : {
 		models : {
 			tie : "tie-intercept.obj",
-			falcon : "millenium-falcon.obj"
+			falcon : "millenium-falcon.obj",
+
+			// Environment
+			rock_01_100 : "environment/rock1/Rock.obj",
 		},
 		textures : {
 			falcon : "resources/textures/falcon.jpg",
 			skybox : "resources/textures/space_skybox_1.png",
 			heightmap : "resources/heightmaps/heightmap_Poland_512x512_16c.png",
+			// heightmap : "resources/heightmaps/SluJkrJ_1024x1024.png",
 			terrain_texture: 'resources/textures/Dirt00seamless_1024x1024.jpg',
-			floor_texture : 'resources/textures/dea60ce67a5bb55100ba6a7b1b1620fe.jpg'
+			floor_texture : 'resources/textures/dea60ce67a5bb55100ba6a7b1b1620fe.jpg',
+
+			// Environment
+			rock_01 : 'resources/textures/environment/rock1/Rock-Texture-Surface.jpg',
 		}
 	},
 
