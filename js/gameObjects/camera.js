@@ -6,10 +6,13 @@ class Camera extends GameObject{
 		super(transform);
 
 		this.motionComponent = new SpaceShipMotionComponent(this);
-		this.inputComponents.push(new FirstPersonFlyInputComponent(this));
+		this.behaviorComponents.push(new FirstPersonFlyBehaviorComponent(this));
 
 		// ability to shoot lasers
-		this.inputComponents.push(new LaserShootingInputComponent(this));
+		this.behaviorComponents.push(new LaserShootingBehaviorComponent(this));
+
+		// control the camera with the keyboard.
+		this.inputComponent = new KeyboardInputComponent();
 
 		// camera and viewport information
 		this.baseViewportUp = v3.create(0,1,0);

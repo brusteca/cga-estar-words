@@ -1,16 +1,15 @@
 'use strict';
 
 class World {
-	constructor(instructions) {
+	constructor(instructions, cameraPosition) {
 		this.physics = new CANNON.World();
 		this.physics.gravity.set(0, -9.82, 0); // m/s²
-		// this.physics.gravity.set(0, 0, -9.82); // m/s²
 
 		this.gameObjects = [];
 		this.pointLights = [];
 		this.events = new BehaviorComponent(instructions, this);
 
-		this.camera = new Camera(new Transform(v3.create(60,0,0,)), this, v3.create(-1, 0, 0), 10);
+		this.camera = new Camera(new Transform(v3.create(cameraPosition.x,cameraPosition.y,cameraPosition.z)), this, v3.create(-1, 0, 0), 10);
 		this.gameObjects.push(this.camera);
 
 		this.skyDome = new SkyDome(new Transform());
@@ -44,7 +43,7 @@ class World {
 		);
 	}
 
-	update(delta_seconds){
+	update(delta_seconds, gameTime){
 		this.physics.step(delta_seconds);
 		this.events.update(delta_seconds);
 
@@ -55,34 +54,8 @@ class World {
 		this.setLightPositionsAndColors();
 
 		for (let ii = 0, len = this.gameObjects.length; ii < len; ++ii) {
-			this.gameObjects[ii].update(delta_seconds);
+			this.gameObjects[ii].update(delta_seconds, gameTime);
 		}
-
-	}
-
-	setCameraSpeed(params){
-		this.cameraSpeed[0] = params.x;
-		this.cameraSpeed[1] = params.y;
-		this.cameraSpeed[2] = params.z;
-	}
-
-	setCameraAcceleration(params){
-		this.cameraAcceleration[0] = params.x;
-		this.cameraAcceleration[1] = params.y;
-		this.cameraAcceleration[2] = params.z;
-	}
-
-	setCameraRotation(){
-		this.cameraRotation[0] = params.x;
-		this.cameraRotation[1] = params.y;
-		this.cameraRotation[2] = params.z;
-	}
-
-	setCameraRotationSpeed(){
-
-	}
-
-	setCameraRotationAcceleration(){
 
 	}
 
@@ -108,11 +81,6 @@ class World {
 	}
 
 	handleInput(keyStatus){
-		this.inputComponent.handleInput(keyStatus);
-
-		for (var i = 0; i < this.gameObjects.length; i++){
-			this.gameObjects[i].handleInput(keyStatus);
-		}
 
 		for (var i = 0; i < keyStatus.length; i++){
 			keyStatus[i].justPressed = false; // used to process inputs only on the first cycle after they are hit

@@ -9,19 +9,15 @@ class GameObject {
 		// el setup de los programas y eso se hacen en los hijos
 		// pero eventualmente mete algo en this.programInfo y this.bufferInfo
 		// fijarse en la clase Efe
-		this.behaviorComponent = new BehaviorComponent([], this);
+		this.behaviorComponents = []; 
 		this.motionComponent = new MotionComponent(this);
-		this.inputComponents = [];
-	}
-
-	handleInput(keyStatus, delta){
-		for (var i = 0; i < this.inputComponents.length; i++){
-			this.inputComponents[i].handleInput(keyStatus, delta);
-		}
+		this.inputComponent = new InputComponent();
 	}
 
 	update(delta) {
-		this.behaviorComponent.update(delta);
+		for (var i = 0; i < this.behaviorComponents.length; i++){
+			this.behaviorComponents[i].update(delta);
+		}
 		this.motionComponent.update(delta);
 	}
 
@@ -83,6 +79,15 @@ class GameObject {
 
 	translate(direction){
 		v3.add(this.transform.position, direction, this.transform.position);
+	}
+
+	rotate(x, y, z){
+		// CAREFUL! This method works only one time and with one axis, after that you'll be 
+		// rotating against the wrong axis. Use Quaternions for improvement (see shipMotion class)
+		var rotationMatrix = this.transform.rotation;
+		m4.rotateX(rotationMatrix, x, rotationMatrix);
+		m4.rotateY(rotationMatrix, y, rotationMatrix);
+		m4.rotateZ(rotationMatrix, z, rotationMatrix);
 	}
 
 }

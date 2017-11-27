@@ -1,12 +1,12 @@
 'use strict';
 
 class InputComponent {
-	constructor(owner) {
-		this.owner = owner;
+	constructor() {
+		
 	}
 
-	handleInput(keyStatus){
-
+	isKeyDown(key){
+		return false;
 	}
 
 }

@@ -18,9 +18,15 @@ class LaserShot extends GameObject{
 
  		this.color = [ 1, 0, 0, 1 ]; // pure red, maybe add as an attribute?
 
+ 		// controls movement. Its' overkill, as that motion component has plenty more options, 
+ 		// but at least we are reusing components. Name could change, though.
  		this.motionComponent = new SpaceShipMotionComponent(this);
 
+ 		// front direction is used to control where the laser moves 
+ 		// required by the motion component
  		this.frontDirection = null;
+
+ 		// to do: add a light
 	}
 
 	getUniforms(viewProjectionMatrix, worldMatrix) {

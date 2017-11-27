@@ -20,6 +20,7 @@ const MODEL_BASE_PATH = "resources/models/";
 const TEXTURE_BASE_PATH = "resources/textures/";
 
 let paused = false;
+let gameTime = 0;
 
 function main() {
 
@@ -36,7 +37,7 @@ function main() {
 	// Clear the color buffer with specified clear color
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
-	world = new World(config.globalEvents);
+	world = new World(config.globalEvents, config.camera.position);
 
 	let numLights = 16;
 	let pointLightPositions = [
@@ -181,7 +182,7 @@ function main() {
 		function mainLoop(timestamp) {
 
 			let current = timestamp;
-			let elapsed = current - previous;
+			let elapsed = current - previous; 
 			previous = current;
 
 			world.handleInput(keyStatus);
@@ -260,8 +261,9 @@ function main() {
 	}
 
 	function update(ms){
-		//cameraAngleRadians = degreesToRadians( (radiansToDegrees(cameraAngleRadians) + 0.3) % 360);
-		world.update(ms * 0.001); // update in seconds!
+		var seconds = ms * 0.001;
+		gameTime += seconds;
+		world.update(seconds, gameTime); // update in seconds!
 	}
 
 	function parseModel(configModel, modelDefaults){
@@ -272,7 +274,7 @@ function main() {
 		var rotation = configTransform.rotation || {};
 		var scale = configTransform.scale || {};
 		var rotationMatrix = m4.create();
-		m4.rotateX(rotationMatrix, rotation.x || 0, rotationMatrix);
+		// works when rotating towards just one axis, two at best with the right combination
 		var transform = new Transform(
 			v3.create(translate.x || 0 ,translate.y || 0, translate.z || 0),
 			rotationMatrix,
@@ -283,6 +285,8 @@ function main() {
 		model.color.r = color.r == undefined? 255 : color.r; // default
 		model.color.g = color.g == undefined? 255 : color.g; // is YELLOW
 		model.color.b = color.b == undefined? 0   : color.b;
+
+		model.rotate(degreesToRadians(rotation.x) || 0, degreesToRadians(rotation.y) || 0, degreesToRadians(rotation.z) || 0);
 
 		model.frontDirection = v3.normalize(v3.create(modelDefaults.front.x, modelDefaults.front.y, modelDefaults.front.z));
 		return model;
@@ -318,16 +322,46 @@ document.onblur = function(){
 }
 
 document.onkeyup = function(event){
+	// capture script
+	if (captureInput && keyStatus[event.keyCode].pressed){
+		for (var i = capturedCommands.length - 1; i >= 0; i--){
+			if (capturedCommands[i].key == event.keyCode && capturedCommands[i].duration == 0){
+				capturedCommands[i].duration = Math.round((gameTime  - capturedCommands[i].time) * 100) / 100;
+				break;
+			}
+		}
+	}
+
 	keyStatus[event.keyCode].pressed = false;
 	keyStatus[event.keyCode].justPressed = false;
 }
 
 document.onkeydown = function(event){
+	// capture script
+	if (captureInput && !keyStatus[event.keyCode].pressed){
+		capturedCommands.push({ time : Math.round(gameTime * 100) / 100, key : event.keyCode, duration : 0});		
+	}
+
 	keyStatus[event.keyCode].pressed = true;
 	keyStatus[event.keyCode].justPressed = true;
+
+	if (event.keyCode == KeyEnum.O){
+		if (event.ctrlKey){
+			if (!captureInput){
+				captureInput = true;
+				capturedCommands = [];
+			}else{
+				captureInput = false;
+				downloadFile("script.txt", JSON.stringify(capturedCommands));
+			}
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	}
 }
 
-
+var captureInput = false;
+var capturedCommands = [];
 
 function preloader(){
 	let img;
@@ -438,3 +472,5 @@ function loadResources(initGame){
 	}*/
 	requestAnimationFrame(preloader);
 }
+
+

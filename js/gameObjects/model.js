@@ -24,7 +24,9 @@ class Model extends GameObject{
 		});			
 		this.color = { r : 0, g : 0, b : 0};
 
-		this.behaviorComponent.instructions = script;
+		if (script != null){
+			this.inputComponent = new ScriptInputComponent(script);
+		}
 	}
 
 	initialize(){

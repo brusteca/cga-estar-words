@@ -10,8 +10,6 @@ class SpaceShipMotionComponent extends MotionComponent{
 		this.angularSpeedDirection = v3.create(0, 0, 0);
 		this.angularSpeed = 0;
 
-		this.angularRotation = 0;
-
 		this.rotation = new Quaternion();
 	}
 
@@ -40,5 +38,19 @@ class SpaceShipMotionComponent extends MotionComponent{
 		this.angularSpeedDirection[0] = xSpeed;
 		this.angularSpeedDirection[1] = ySpeed;
 		this.angularSpeedDirection[2] = zSpeed;
+	}
+
+	rotate(x, y, z){
+		// do not use
+		var q = new Quaternion(1, v3.mulScalar(v3.create(1,0,0), x)).normalize();
+		this.rotation = this.rotation.mul(q);
+
+		q = new Quaternion(1, v3.mulScalar(v3.create(0,1,0), y)).normalize();
+		this.rotation = this.rotation.mul(q);
+
+		q = new Quaternion(1, v3.mulScalar(v3.create(0,0,1), z)).normalize();
+		this.rotation = this.rotation.mul(q);
+
+		this.owner.transform.rotation = this.rotation.toMatrix4();
 	}
 }
