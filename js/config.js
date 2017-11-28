@@ -2,12 +2,26 @@
 var config = {
 
 	resources : {
-		models : {
-			tie : "tie-intercept.obj",
-			falcon : "millenium-falcon.obj",
+		models: {
+			// tie : {
+			// 	file : "resources/models/tie-intercept.obj",
+			// 	texture : "",
+			// 	color: { r: 200, g : 200, b : 200},
+			// 	front: { x: 0, y : 0, z : 1}
+			// },
+			// falcon : {
+			// 	file : "resources/models/millenium-falcon.obj",
+			// 	texture : "falcon.jpg",
+			// 	color: { r: 200, g : 200, b : 200},
+			// 	front: { x: 0, y : 0, z : 1}
+			// },
 
-			// Environment
-			rock_01_100 : "environment/rock1/Rock.obj",
+			rock: {
+				file: "resources/models/environment/rock1/Rock1.obj",
+				texture: 'rock_01',
+				color: { r: 200, g : 200, b : 200},
+				front: { x: 0, y : 0, z : 1}
+			}
 		},
 		textures : {
 			falcon : "resources/textures/falcon.jpg",
@@ -18,13 +32,10 @@ var config = {
 			floor_texture : 'resources/textures/dea60ce67a5bb55100ba6a7b1b1620fe.jpg',
 
 			// Environment
-			rock_01 : 'resources/textures/environment/rock1/Rock-Texture-Surface.jpg',
+			rock_01 :{
+				src: 'resources/textures/environment/rock1/Rock-Texture-Surface.jpg',
+			},
 		}
-	},
-
-	modelDefaults: {
-		tie : { file : "tie-intercept.obj", texture : "", color: { r: 200, g : 200, b : 200}, front: { x: 0, y : 0, z : 1} },
-		falcon : { file : "millenium-falcon.obj", texture : "falcon.jpg", color: { r: 200, g : 200, b : 200}, front: { x: 0, y : 0, z : 1} }
 	},
 
 	scripts : {
@@ -35,7 +46,8 @@ var config = {
 		//{ type : "falcon", transform : { translate : {x : -600, y : -50, z : 800}, scale : { x : 0.5, y : 0.5, z : 0.5 }}, script : [] } ,
 		//{ type : "tie", transform : { translate : {x : -20, y : 20, z : -120}}, script : "tieGroup1" },
 		//{ type : "tie", transform : { translate : {x : -30, y : 25, z : -140}}, script : "tieGroup1" },
-		//{ type : "tie", transform : { translate : {x : -10, y : 20, z : -140}}, script : "tieGroup1" }
+		//{ type : "tie", transform : { translate : {x : -10, y : 20, z : -140}}, script : "tieGroup1" },
+		{ type : "rock", transform : { translate : {x : -10, y : 20, z : -140}}, script : [] },
 
 	],
 
