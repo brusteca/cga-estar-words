@@ -8,7 +8,11 @@ class Model extends GameObject{
 		// setup GLSL program
 		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"]);
 
-		this.bufferInfo = modelManager.bufferInfos[modelId];
+		if (modelId in modelManager.bufferInfos) {
+			this.bufferInfo = modelManager.bufferInfos[modelId];
+		} else {
+			throw('Model "' + modelId + '" not in modelManager')
+		}
 
 		// set texture
 		if (textureId in textureManager.textures) {

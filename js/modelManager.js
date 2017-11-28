@@ -72,7 +72,7 @@ class ModelManager {
 				throw('Unsupported object format');
 			}
 		}).then((bufferInfo) => {
-			this.bufferInfos[modelPath] = bufferInfo;
+			this.bufferInfos[modelId] = bufferInfo;
 		});
 	}
 
