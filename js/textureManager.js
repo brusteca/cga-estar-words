@@ -7,6 +7,7 @@ class TextureManager {
 	}
 
 	loadTexture(textureId, options) {
+		console.log(textureId, options);
 		this.textures[textureId] = twgl.createTexture(gl, options);
 	}
 }

@@ -25,10 +25,16 @@ var config = {
 		},
 		textures : {
 			falcon : "resources/textures/falcon.jpg",
-			skybox : "resources/textures/space_skybox_1.png",
+			skybox : {
+				src: "resources/textures/space_skybox_1.png",
+			},
 			heightmap : "resources/heightmaps/heightmap_Poland_512x512_16c.png",
 			// heightmap : "resources/heightmaps/SluJkrJ_1024x1024.png",
-			terrain_texture: 'resources/textures/Dirt00seamless_1024x1024.jpg',
+			terrain_texture: {
+				src: 'resources/textures/Dirt00seamless_1024x1024.jpg',
+				wrap: gl.REPEAT,
+				auto: true
+			},
 			floor_texture : 'resources/textures/dea60ce67a5bb55100ba6a7b1b1620fe.jpg',
 
 			// Environment

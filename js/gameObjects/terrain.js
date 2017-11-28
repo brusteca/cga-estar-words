@@ -129,11 +129,7 @@ class Terrain extends GameObject {
 
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-		this.texture = twgl.createTexture(gl, {
-			src: images.terrain_texture,
-			wrap: gl.REPEAT,
-			auto: true
-		});
+		this.texture = textureManager.textures['terrain_texture'];
 
 		// Create a terrain in cannon
 

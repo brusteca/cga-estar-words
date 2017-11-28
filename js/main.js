@@ -173,8 +173,6 @@ function main() {
 	world.gameObjects.push(milleniumFalcon);
 	*/
 
-	console.log(world.gameObjects);
-
 	requestAnimationFrame(initLoop)
 
 	function initLoop(timestamp) {
@@ -270,7 +268,6 @@ function main() {
 	}
 
 	function parseModel(configModel){
-		console.log(config.resources.models[configModel.type]);
 		let modelDefaults = config.resources.models[configModel.type]
 		var texture = modelDefaults.texture == undefined? null : (modelDefaults.texture);
 		var color = configModel.color || modelDefaults.color || {};
@@ -416,9 +413,10 @@ function loadResources(initGame){
 		} else {
 			images[img].source = config.resources.textures[img].src;
 		}
+		images[img].textureId = img;
 		images[img].load = function(){
-			if (typeof config.resources.textures[img] != 'string') {
-				textureManager.loadTexture(img, config.resources.textures[img]);
+			if (typeof config.resources.textures[this.textureId] != 'string') {
+				textureManager.loadTexture(this.textureId, config.resources.textures[this.textureId]);
 			}
 			loadedAssets++;
 			if (loadedAssets == assetCount){
@@ -437,7 +435,6 @@ function loadResources(initGame){
         	this.img.onload = function(){
         		this.load();
         	}
-
         	if (this.img.source.endsWith('.svg')){
 	        	this.img.src = "data:image/svg+xml;base64," + base64Encode(this.responseText);
         	}else{
