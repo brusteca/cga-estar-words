@@ -17,7 +17,6 @@ class SkyDome extends GameObject {
 
 		// set texture
 		let textureId = 'skybox';
-		console.log(textureManager);
 		if (textureId in textureManager.textures) {
 			this.texture = textureManager.textures[textureId];
 			this.useTexture = true;

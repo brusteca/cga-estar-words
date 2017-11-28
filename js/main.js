@@ -416,7 +416,9 @@ function loadResources(initGame){
 		images[img].textureId = img;
 		images[img].load = function(){
 			if (typeof config.resources.textures[this.textureId] != 'string') {
-				textureManager.loadTexture(this.textureId, config.resources.textures[this.textureId]);
+				let options = config.resources.textures[this.textureId];
+				options.src = this;
+				textureManager.loadTexture(this.textureId, options);
 			}
 			loadedAssets++;
 			if (loadedAssets == assetCount){
