@@ -1,7 +1,7 @@
 
 var config = {
 
-	resources : {
+	resources: {
 		models: {
 			// tie : {
 			// 	file : "resources/models/tie-intercept.obj",
@@ -23,7 +23,7 @@ var config = {
 				front: { x: 0, y : 0, z : 1}
 			}
 		},
-		textures : {
+		textures: {
 			falcon : "resources/textures/falcon.jpg",
 			skybox : {
 				src: "resources/textures/space_skybox_1.png",
@@ -40,6 +40,20 @@ var config = {
 			// Environment
 			rock_01 :{
 				src: 'resources/textures/environment/rock1/Rock-Texture-Surface.jpg',
+			},
+		},
+		shaders: {
+			default: {
+				vertex: "3d-vertex-shader",
+				fragment: "3d-fragment-shader"
+			},
+			minimal: {
+				vertex: "3d-vertex-shader-terrain",
+				fragment: "3d-fragment-shader-terrain"
+			},
+			skybox: {
+				vertex: "3d-vertex-shader-skydome",
+				fragment: "3d-fragment-shader-skydome"
 			},
 		}
 	},

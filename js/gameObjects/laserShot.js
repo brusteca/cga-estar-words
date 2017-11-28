@@ -1,11 +1,11 @@
 'use strict';
 
 class LaserShot extends GameObject{
-	
+
 	constructor(transform) {
 		super(transform);
 		// setup GLSL program
-		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader-laser", "3d-fragment-shader-laser"])
+		this.programInfo = shaderManager.programInfos['default'];
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
@@ -24,7 +24,7 @@ class LaserShot extends GameObject{
 	}
 
 	getUniforms(viewProjectionMatrix, worldMatrix) {
-		let uniforms = { 
+		let uniforms = {
 			u_color : this.color
 		};
 		this.addGameObjectUniforms(uniforms, viewProjectionMatrix, worldMatrix);
@@ -41,7 +41,7 @@ class LaserShot extends GameObject{
 			 50, -5, -5,
 			-50, -5, -5,
 			-50, -5,  5,
-		
+
 			-50, -5,  5,
 			 50, -5,  5,
 			 50, -5, -5,
@@ -68,7 +68,7 @@ class LaserShot extends GameObject{
 			 -50, -5,  5,
 			 -50, -5, -5,
 			 -50,  5, -5,
-		
+
 			 -50,  5, -5,
 			 -50,  5,  5,
 			 -50, -5,  5,
@@ -146,5 +146,3 @@ class LaserShot extends GameObject{
 	};
 
 }
-
-

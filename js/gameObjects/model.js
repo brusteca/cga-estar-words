@@ -6,7 +6,7 @@ class Model extends GameObject{
 		super(transform);
 
 		// setup GLSL program
-		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"]);
+		this.programInfo = shaderManager.programInfos['default'];
 
 		if (modelId in modelManager.bufferInfos) {
 			this.bufferInfo = modelManager.bufferInfos[modelId];

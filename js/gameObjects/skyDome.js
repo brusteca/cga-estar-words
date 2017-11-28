@@ -3,7 +3,7 @@ class SkyDome extends GameObject {
 	constructor(transform) {
 		super(transform);
 		// setup GLSL program
-		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader-skydome", "3d-fragment-shader-skydome"])
+		this.programInfo = shaderManager.programInfos['skybox'];
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders

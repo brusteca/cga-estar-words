@@ -14,6 +14,7 @@ let fieldOfViewRadians = degreesToRadians(60);
 
 let modelManager = new ModelManager();
 let textureManager = new TextureManager();
+let shaderManager = new ShaderManager();
 
 let world = null;
 
@@ -398,11 +399,15 @@ let loadedAssets = 0;
 function loadResources(initGame){
 	let img;
 	let model;
+	let program;
 
 	for (img in config.resources.textures) {
 		assetCount++;
 	}
 	for (model in config.resources.models) {
+		assetCount++;
+	}
+	for (program in config.resources.shaders) {
 		assetCount++;
 	}
 	for (img in config.resources.textures){
@@ -450,6 +455,18 @@ function loadResources(initGame){
 	}
 	for (model in config.resources.models) {
 		modelManager.loadModelBufferInfo(model, config.resources.models[model])
+			.then(() => {
+				loadedAssets++;
+				if (loadedAssets == assetCount){
+					loadingImages = false;
+					initGame();
+				}
+			})
+	}
+	for (program in config.resources.shaders) {
+		let vertex = config.resources.shaders[program].vertex;
+		let fragment = config.resources.shaders[program].fragment;
+		shaderManager.loadProgram(program, vertex, fragment)
 			.then(() => {
 				loadedAssets++;
 				if (loadedAssets == assetCount){
