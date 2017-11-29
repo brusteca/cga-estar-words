@@ -1,0 +1,67 @@
+'use strict';
+
+// handles all the crap lying about on the field
+class Decorations extends GameObject {
+	constructor(transform) {
+		// should have a centered transform or it won't work
+		// coz this is a fucking hack
+		super(transform);
+
+		this.rocks = [];
+		let rockQty = 1000;
+		// here generate the rocks
+		// hacks and shit, beware
+		let terrain = world.terrain;
+		let min_corner = m4.transformPoint(
+			terrain.transform.transformMatrix,
+			terrain.position_buffer[0]
+		);
+		let max_corner = m4.transformPoint(
+			terrain.transform.transformMatrix,
+			terrain.position_buffer[terrain.position_buffer.length - 1]
+		);
+		function getRandomArbitrary(min, max) {
+			return Math.random() * (max - min) + min;
+		}
+		let minX = min_corner[0];
+		let minZ = min_corner[2];
+		let maxX = max_corner[0];
+		let maxZ = max_corner[2];
+		for (let ii = 0; ii < rockQty; ++ii) {
+			let positionX = getRandomArbitrary(minX, maxX);
+			let positionZ = getRandomArbitrary(minZ, maxZ);
+			let position = v3.create(positionX, 0, positionZ);
+			let positionY = terrain.getHeightAt(position);
+			position[1] = positionY;
+			let scale = getRandomArbitrary(2, 10);
+			let scaleModY = getRandomArbitrary(-2.5, 2.5);
+			let scaleModZ = getRandomArbitrary(-2.5, 2.5);
+			// TODO: fix rotations
+			let rotation = (new Array(16)).map(elem => getRandomArbitrary(0,2*Math.PI))
+			this.rocks.push(new Model(
+				'rock',
+				'rock_01',
+				new Transform(
+					position,
+					m4.create(rotation),
+					v3.create(scale, scale + scaleModY, scale + scaleModZ),
+					this.transform
+				),
+				[]
+			))
+		}
+
+	}
+
+	update(delta) {
+		for (let ii = 0, len = this.rocks.length; ii < len; ++ii) {
+			this.rocks[ii].update(delta)
+		}
+	}
+
+	draw(viewProjectionMatrix, worldMatrix=null) {
+		for (let ii = 0, len = this.rocks.length; ii < len; ++ii) {
+			this.rocks[ii].draw(viewProjectionMatrix, worldMatrix=null)
+		}
+	}
+}

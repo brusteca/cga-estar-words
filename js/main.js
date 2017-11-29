@@ -165,6 +165,8 @@ function main() {
 		world.gameObjects.push(model);
 	}
 
+	world.gameObjects.push(new Decorations(new Transform()));
+
 	/*
 	var milleniumFalcon = new Model("resources/models/millenium-falcon.obj", "resources/textures/falcon.jpg", new Transform(
 		v3.create(-600,-50,600),
