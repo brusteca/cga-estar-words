@@ -13,10 +13,13 @@ let cameraAngleRadians = degreesToRadians(0);
 let fieldOfViewRadians = degreesToRadians(60);
 
 let modelManager = new ModelManager();
+let textureManager = new TextureManager();
+let shaderManager = new ShaderManager();
 
 let world = null;
 
-const MODEL_BASE_PATH = "resources/models/";
+// const MODEL_BASE_PATH = "resources/models/";
+const MODEL_BASE_PATH = "";
 const TEXTURE_BASE_PATH = "resources/textures/";
 
 let paused = false;
@@ -159,9 +162,12 @@ function main() {
 
 	for (var i = 0; i < config.models.length; i++){
 		var configModel = config.models[i];
-		var model = parseModel(configModel, config.modelDefaults[configModel.type]);
+		var model = parseModel(configModel);
 		world.gameObjects.push(model);
 	}
+
+	world.gameObjects.push(new Decorations(new Transform()));
+
 	/*
 	var milleniumFalcon = new Model("resources/models/millenium-falcon.obj", "resources/textures/falcon.jpg", new Transform(
 		v3.create(-600,-50,600),
@@ -266,8 +272,9 @@ function main() {
 		world.update(seconds, gameTime); // update in seconds!
 	}
 
-	function parseModel(configModel, modelDefaults){
-		var texture = modelDefaults.texture == undefined? null : (TEXTURE_BASE_PATH + modelDefaults.texture);
+	function parseModel(configModel){
+		let modelDefaults = config.resources.models[configModel.type]
+		var texture = modelDefaults.texture == undefined? null : (modelDefaults.texture);
 		var color = configModel.color || modelDefaults.color || {};
 		var configTransform = configModel.transform || {};
 		var translate = configTransform.translate || {};
@@ -281,10 +288,7 @@ function main() {
 			v3.create(scale.x || 1, scale.y || 1, scale.z || 1)
 		);
 		var script = config.scripts[configModel.script] || [];
-		var model = instanciateModel(configModel.type, MODEL_BASE_PATH + modelDefaults.file, texture, transform, script);
-		model.color.r = color.r == undefined? 255 : color.r; // default
-		model.color.g = color.g == undefined? 255 : color.g; // is YELLOW
-		model.color.b = color.b == undefined? 0   : color.b;
+		var model = instanciateModel(configModel.type, texture, transform, script);
 
 		model.rotate(degreesToRadians(rotation.x) || 0, degreesToRadians(rotation.y) || 0, degreesToRadians(rotation.z) || 0);
 
@@ -292,12 +296,14 @@ function main() {
 		return model;
 	}
 
-	function instanciateModel(modelType, modelPath, texturePath, transform, script){
-		switch (modelType){
+	function instanciateModel(modelId, textureId, transform, script){
+		switch (modelId){
 			case "tie":
 			case "falcon":
-				return new Ship(modelPath, texturePath, transform, script);
+				return new Ship(modelId, textureId, transform, script);
 				break;
+			case "rock":
+				return new Model(modelId, textureId, transform, script);
 		}
 		return null; // breaks the caller, but we will know :)
 	}
@@ -428,14 +434,33 @@ let loadedAssets = 0;
 
 function loadResources(initGame){
 	let img;
+	let model;
+	let program;
 
-	for (img in config.resources.textures){
+	for (img in config.resources.textures) {
+		assetCount++;
+	}
+	for (model in config.resources.models) {
+		assetCount++;
+	}
+	for (program in config.resources.shaders) {
 		assetCount++;
 	}
 	for (img in config.resources.textures){
 		images[img] = document.createElement('img');
-		images[img].source = config.resources.textures[img];
+		// support for options object in config
+		if (typeof config.resources.textures[img] == 'string') {
+			images[img].source = config.resources.textures[img];
+		} else {
+			images[img].source = config.resources.textures[img].src;
+		}
+		images[img].textureId = img;
 		images[img].load = function(){
+			if (typeof config.resources.textures[this.textureId] != 'string') {
+				let options = config.resources.textures[this.textureId];
+				options.src = this;
+				textureManager.loadTexture(this.textureId, options);
+			}
 			loadedAssets++;
 			if (loadedAssets == assetCount){
 				loadingImages = false;
@@ -453,7 +478,6 @@ function loadResources(initGame){
         	this.img.onload = function(){
         		this.load();
         	}
-
         	if (this.img.source.endsWith('.svg')){
 	        	this.img.src = "data:image/svg+xml;base64," + base64Encode(this.responseText);
         	}else{
@@ -461,9 +485,31 @@ function loadResources(initGame){
         	}
 
         }
-        images[img].request.open("GET", config.resources.textures[img], true);
+        images[img].request.open("GET", images[img].source, true);
         images[img].request.overrideMimeType('text/plain; charset=x-user-defined');
         images[img].request.send(null);
+	}
+	for (model in config.resources.models) {
+		modelManager.loadModelBufferInfo(model, config.resources.models[model])
+			.then(() => {
+				loadedAssets++;
+				if (loadedAssets == assetCount){
+					loadingImages = false;
+					initGame();
+				}
+			})
+	}
+	for (program in config.resources.shaders) {
+		let vertex = config.resources.shaders[program].vertex;
+		let fragment = config.resources.shaders[program].fragment;
+		shaderManager.loadProgram(program, vertex, fragment)
+			.then(() => {
+				loadedAssets++;
+				if (loadedAssets == assetCount){
+					loadingImages = false;
+					initGame();
+				}
+			})
 	}
 	/*
 	for (snd in soundSources){

@@ -4,7 +4,7 @@ class Floor extends GameObject {
 	constructor(transform) {
 		super(transform);
 		// setup GLSL program
-		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"])
+		this.programInfo = shaderManager.programInfos['default'];
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders

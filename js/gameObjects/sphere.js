@@ -4,7 +4,7 @@ class Sphere extends GameObject {
 	constructor(transform) {
 		super(transform);
 		// setup GLSL program
-		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader-terrain", "3d-fragment-shader-terrain"])
+		this.programInfo = shaderManager.programInfos['minimal'];
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders

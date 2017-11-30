@@ -4,7 +4,7 @@ class Terrain extends GameObject {
 	constructor(transform) {
 		super(transform);
 		// setup GLSL program
-		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader", "3d-fragment-shader"])
+		this.programInfo = shaderManager.programInfos['default'];
 
 		let height_data = this.getHeightData(images.heightmap, images.heightmap.width, images.heightmap.height);
 
@@ -129,11 +129,7 @@ class Terrain extends GameObject {
 
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-		this.texture = twgl.createTexture(gl, {
-			src: images.terrain_texture,
-			wrap: gl.REPEAT,
-			auto: true
-		});
+		this.texture = textureManager.textures['terrain_texture'];
 
 		// Create a terrain in cannon
 

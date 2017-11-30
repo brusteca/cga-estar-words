@@ -3,7 +3,7 @@ class SkyDome extends GameObject {
 	constructor(transform) {
 		super(transform);
 		// setup GLSL program
-		this.programInfo = twgl.createProgramInfo(gl, ["3d-vertex-shader-skydome", "3d-fragment-shader-skydome"])
+		this.programInfo = shaderManager.programInfos['skybox'];
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
@@ -15,18 +15,20 @@ class SkyDome extends GameObject {
 
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-		this.useTexture = false;
-		this.texture = twgl.createTexture(gl, {src: images.skybox}, 
-			(error, texture) => {
-				if (!error){
-					this.useTexture = true;
-				} 
-			});			
+		// set texture
+		let textureId = 'skybox';
+		if (textureId in textureManager.textures) {
+			this.texture = textureManager.textures[textureId];
+			this.useTexture = true;
+		} else {
+			this.texture = null;
+			this.useTexture = false;
+		}
 	}
 
 	getUniforms(viewProjectionMatrix, worldMatrix) {
-		let uniforms = { 
-			u_texture: this.texture 
+		let uniforms = {
+			u_texture: this.texture
 		};
 		this.addGameObjectUniforms(uniforms, viewProjectionMatrix, worldMatrix);
 		return uniforms;
@@ -38,7 +40,7 @@ class SkyDome extends GameObject {
 			 8192, -8192, -8192,
 			-8192, -8192, -8192,
 			-8192, -8192,  8192,
-		
+
 			-8192, -8192,  8192,
 			 8192, -8192,  8192,
 			 8192, -8192, -8192,
@@ -65,7 +67,7 @@ class SkyDome extends GameObject {
 			 -8192, -8192,  8192,
 			 -8192, -8192, -8192,
 			 -8192,  8192, -8192,
-		
+
 			 -8192,  8192, -8192,
 			 -8192,  8192,  8192,
 			 -8192, -8192,  8192,
@@ -200,7 +202,7 @@ class SkyDome extends GameObject {
 			0.25,0.5,
 			0.25, 0.25,
 			0.5, 0.25,
-			
+
 			0.5, 0.25,
 			0.5, 0.5,
 			0.25,0.5,
@@ -227,16 +229,16 @@ class SkyDome extends GameObject {
 			 0.5, 0.25,
 			 0.25, 0.25,
 		     0.25, 0,
-		
+
 			 0.25, 0,
 			 0.5, 0,
 			 0.5, 0.25,
-			 
+
 			 // front
              0.5, 0.5,
  			 0.5, 0.25,
 			 0.75, 0.25,
-			 
+
              0.75, 0.25,
              0.75, 0.5,
              0.5, 0.5,

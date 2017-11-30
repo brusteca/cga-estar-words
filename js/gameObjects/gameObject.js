@@ -3,9 +3,6 @@
 class GameObject {
 	constructor(transform) {
 		this.transform = transform;
-		// TODO: pensar una forma de poner los shaders y los atributos
-		// todo junto o algo asi. tipo como parametro
-
 		// el setup de los programas y eso se hacen en los hijos
 		// pero eventualmente mete algo en this.programInfo y this.bufferInfo
 		// fijarse en la clase Efe
@@ -22,7 +19,6 @@ class GameObject {
 	}
 
 	draw(viewProjectionMatrix, worldMatrix=null) {
-
 		// Tell it to use our program (pair of shaders)
 		gl.useProgram(this.programInfo.program);
 		// Bind all the buffers and attributes of the program
