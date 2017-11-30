@@ -2,14 +2,14 @@
 
 class Model extends GameObject{
 
-	constructor(modelId, textureId, transform, script) {
+	constructor(modelId, textureId, transform, script, lodDistances=[-1]) {
 		super(transform);
 
 		// setup GLSL program
 		this.programInfo = shaderManager.programInfos['default'];
-
-		if (modelId in modelManager.bufferInfos) {
-			this.bufferInfo = modelManager.bufferInfos[modelId];
+		if (modelId in modelManager.lodBufferInfos) {
+			this.lodBufferInfos = modelManager.lodBufferInfos[modelId];
+			this.lodDistances = modelManager.lodDistances[modelId]
 		} else {
 			throw('Model "' + modelId + '" not in modelManager')
 		}
@@ -24,6 +24,28 @@ class Model extends GameObject{
 		}
 
 		this.behaviorComponent.instructions = script;
+
+		//for memory savings
+		this.vaux1 = v3.create();
+		this.vaux2 = v3.create();
+	};
+
+	update(delta) {
+		super.update(delta);
+		if (this.lodDistances.length > 1) {
+			let myPosition = this.transform.getWorldPosition(this.vaux1);
+			let cameraPosition = world.getCameraPosition(this.vaux2);
+			let distance = v3.distance(myPosition, cameraPosition);
+			for (let ii = 0, len = this.lodDistances.length; ii < len; ++ii) {
+				if (distance < this.lodDistances[ii] || ii == len - 1) {
+					this.bufferInfo = this.lodBufferInfos[ii];
+					break;
+				}
+			}
+		} else {
+			this.bufferInfo = this.lodBufferInfos[0];
+		}
+
 	}
 
 	getGeometry() {

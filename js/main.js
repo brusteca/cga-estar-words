@@ -407,7 +407,7 @@ function loadResources(initGame){
 		assetCount++;
 	}
 	for (model in config.resources.models) {
-		assetCount++;
+		assetCount += config.resources.models[model].lod_files.length;
 	}
 	for (program in config.resources.shaders) {
 		assetCount++;
@@ -456,7 +456,9 @@ function loadResources(initGame){
         images[img].request.send(null);
 	}
 	for (model in config.resources.models) {
-		modelManager.loadModelBufferInfo(model, config.resources.models[model])
+		let options = config.resources.models[model];
+		for (let ii = 0, len = options.lod_files.length; ii < len; ++ii) {
+			modelManager.loadModelBufferInfo(model, options, ii)
 			.then(() => {
 				loadedAssets++;
 				if (loadedAssets == assetCount){
@@ -464,6 +466,7 @@ function loadResources(initGame){
 					initGame();
 				}
 			})
+		}
 	}
 	for (program in config.resources.shaders) {
 		let vertex = config.resources.shaders[program].vertex;

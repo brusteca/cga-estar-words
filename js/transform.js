@@ -17,16 +17,20 @@ class Transform {
 		this.calculateTransformMatrix();
 	}
 
-	setPosition(newPosition){
+	setLocalPosition(newPosition){
 		this.position = newPosition;
 	}
 
-	setRotation(newRotation){
+	setLocalRotation(newRotation){
 		this.rotation = newRotation;
 	}
 
-	setScale(newScale){
+	setLocalScale(newScale){
 		this.scale = newScale;
+	}
+
+	getWorldPosition(dst) {
+		return m4.getTranslation(this.transformMatrix, dst)
 	}
 
 	calculateTransformMatrix(){

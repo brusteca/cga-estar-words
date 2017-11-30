@@ -17,7 +17,12 @@ var config = {
 			// },
 
 			rock: {
-				file: "resources/models/environment/rock1/Rock1.obj",
+				lod_files: [
+					{
+						file: "resources/models/environment/rock1/Rock1.obj",
+						max_distance: -1
+					}
+				],
 				texture: 'rock_01',
 				color: { r: 200, g : 200, b : 200},
 				front: { x: 0, y : 0, z : 1}
