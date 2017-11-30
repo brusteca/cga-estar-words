@@ -36,14 +36,16 @@ class Decorations extends GameObject {
 			let scale = getRandomArbitrary(2, 10);
 			let scaleModY = getRandomArbitrary(-2.5, 2.5);
 			let scaleModZ = getRandomArbitrary(-2.5, 2.5);
-			// TODO: fix rotations
-			let rotation = (new Array(16)).map(elem => getRandomArbitrary(0,2*Math.PI))
+			let rotation = m4.identity();
+			// m4.rotateX(rotation, getRandomArbitrary(0, 2*Math.PI), rotation);
+			m4.rotateY(rotation, getRandomArbitrary(0, 2*Math.PI), rotation);
+			// m4.rotateZ(rotation, getRandomArbitrary(0, 2*Math.PI), rotation);
 			this.rocks.push(new Model(
 				'rock',
 				'rock_01',
 				new Transform(
 					position,
-					m4.create(rotation),
+					rotation,
 					v3.create(scale, scale + scaleModY, scale + scaleModZ),
 					this.transform
 				),
