@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CGA - Obligatorio 2</title>
+    <meta charset="iso-8859-1">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Computación Gráfica Avanzada
+
+## Obligatorio 2
+
+Bruno Stecanella -- Federico Rivero
+
+---
+
+# Batalla espacial
+
+.video[<div style="position:relative;height:0;padding-bottom:56.25%"><iframe src="https://www.youtube.com/embed/64hN8D8IsTM?ecver=2&start=220" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allowfullscreen></iframe></div>]
+
+---
+
+# Efectos gráficos
+
+* Nadie muestra piel
+* Lásers y cohetes que se mueven e iluminan
+* Interacción entre láser y pared
+* Efectos de partículas (explosiones)
+* Naves espaciales
+* Sombras
+* Montañas a la distancia (no necesariamente atmósfera terrestre)
+* LOD
+
+---
+
+# Luz dinámica
+
+.video[<div style="position:relative;height:0;padding-bottom:56.25%"><iframe src="https://www.youtube.com/embed/-p2og9EbL6I?ecver=2&start=220" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allowfullscreen></iframe></div>]
+
+---
+
+# Arquitectura (1/2)
+
+.middle[![Diagrama 1](diagrama_clases_1.jpg)]
+
+---
+
+# Elementos gráficos
+
+* Skybox
+* Terreno con heightmap
+* Generación aleatoria de modelos estáticos
+* Luces dinámicas
+* Alpha blending
+* Disparos
+* Efecto de partículas al chocar un láser contra el terreno
+* Cámara free (rotaciones en todas las direcciones)
+* Colisión con terreno de la cámara (no la atraviesa) y los lásers
+* Grid para la colisión con las piedras del terreno
+* Naves con script de vuelo
+
+---
+
+# Elementos arquitectónicos y de programación
+
+* Preloader de recursos (texturas, modelos, shaders)
+* Sistema 'plug and play' de componentes para los gameObjects (input, behavior, motion, collider, physics)
+* Sistema de grabado de scripts a partir de la entrada del usuario 
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
