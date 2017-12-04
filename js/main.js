@@ -1,7 +1,7 @@
 'use strict';
 
 const canvas = document.getElementById('glCanvas');
-const gl = canvas.getContext('webgl');
+const gl = canvas.getContext('webgl', { alpha : false, premultipliedAlpha : false });
 
 const v3 = twgl.v3;
 const m3 = twgl.m3;
@@ -25,6 +25,9 @@ const TEXTURE_BASE_PATH = "resources/textures/";
 let paused = false;
 let gameTime = 0;
 
+let STATIC_LIGHT_COUNT = 0;
+let DYNAMIC_LIGHT_COUNT = 0;
+
 function main() {
 
 	document.getElementById('glCanvas').style.display = "block";
@@ -36,13 +39,25 @@ function main() {
 		return;
 	}
 	// Set clear color to black, fully opaque
-	gl.clearColor(1.0, 1.0, 1.0, 1.0);
-	// Clear the color buffer with specified clear color
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	
+	 // Turn on culling. By default backfacing triangles
+    // will be culled.
+    gl.enable(gl.CULL_FACE);
 
+    // Enable the depth buffer
+    gl.enable(gl.DEPTH_TEST);
+
+    // alpha blending!
+    gl.colorMask(1, 1, 1, 1);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+     
 	world = new World(config.globalEvents, config.camera.position);
 
 	let numLights = 16;
+	STATIC_LIGHT_COUNT = 3;
+	DYNAMIC_LIGHT_COUNT = numLights - STATIC_LIGHT_COUNT;
 	let pointLightPositions = [
 		-30, 60, 40,
 		-30, 60, -40,
@@ -132,11 +147,12 @@ function main() {
 	}
 	*/
 
+	/*
 	world.gameObjects.push(new Sphere(new Transform(
 		v3.create(0, 10, 10),
 		m4.create(),
 		v3.create(0.1, 0.1, 0.1)
-	)));
+	)));*/
 
 	// world.gameObjects.push(new Floor(new Transform(
 	// 	v3.create(0,-10,0),
@@ -191,8 +207,6 @@ function main() {
 			let elapsed = current - previous; 
 			previous = current;
 
-			world.handleInput(keyStatus);
-
 			if (!paused){
 				lag += elapsed;
 
@@ -218,13 +232,6 @@ function main() {
 
 	    // Clear the canvas AND the depth buffer.
 	    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	    // Turn on culling. By default backfacing triangles
-	    // will be culled.
-	    gl.enable(gl.CULL_FACE);
-
-	    // Enable the depth buffer
-	    gl.enable(gl.DEPTH_TEST);
 
 	    // Compute the projection matrix
 	    var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -499,17 +506,43 @@ function loadResources(initGame){
 				}
 			})
 	}
+	let shaderProgramPrefix = "shaders/";
 	for (program in config.resources.shaders) {
 		let vertex = config.resources.shaders[program].vertex;
 		let fragment = config.resources.shaders[program].fragment;
+
+
+		/*
 		shaderManager.loadProgram(program, vertex, fragment)
-			.then(() => {
-				loadedAssets++;
-				if (loadedAssets == assetCount){
-					loadingImages = false;
-					initGame();
-				}
-			})
+				.then(() => {
+					loadedAssets++;
+					if (loadedAssets == assetCount){
+						loadingImages = false;
+						initGame();
+					}
+				});
+		*/
+
+		var p1 = $.get(shaderProgramPrefix + vertex + ".vert");
+		var p2 = $.get(shaderProgramPrefix + fragment + ".frag");
+
+		var queryProgram = function(){
+			var currentProg = program;
+			Promise.all([p1,p2]).then(function(values){
+				var vertexShader = values[0];
+				var fragmentShader = values[1];
+				shaderManager.loadProgram(currentProg, vertexShader, fragmentShader)
+					.then(() => {
+						loadedAssets++;
+						if (loadedAssets == assetCount){
+							loadingImages = false;
+							initGame();
+						}
+					});
+			});
+		}
+
+		queryProgram();	
 	}
 	/*
 	for (snd in soundSources){

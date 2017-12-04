@@ -16,6 +16,9 @@ class World {
 		this.gameObjects.push(this.skyDome);
 
 		this.inputComponent = new WorldInputComponent();
+
+		// index in the array of the next free light
+		this.availableLight = 0;
 	}
 
 	setTerrain(terrain) {
@@ -53,10 +56,15 @@ class World {
 		// after updating the lights, set the internal cache
 		this.setLightPositionsAndColors();
 
-		for (let ii = 0, len = this.gameObjects.length; ii < len; ++ii) {
+		// reverse loop cause some game objects can remove themseles from the gameObjects array on updat4e
+		for (let ii = this.gameObjects.length - 1; ii >= 0; --ii) {
 			this.gameObjects[ii].update(delta_seconds, gameTime);
 		}
 
+		// disable the 'one time' hits
+		for (var i = 0; i < keyStatus.length; i++){
+			keyStatus[i].justPressed = false; // used to process inputs only on the first cycle after they are hit
+		}
 	}
 
 	getCameraPosition(){
@@ -80,11 +88,17 @@ class World {
 	    return projectionMatrix;
 	}
 
-	handleInput(keyStatus){
-
-		for (var i = 0; i < keyStatus.length; i++){
-			keyStatus[i].justPressed = false; // used to process inputs only on the first cycle after they are hit
-		}
+	getFreeDynamicLight(){
+		// hardcoded stride and maxlights...
+		var pointLight = this.pointLights[this.availableLight + STATIC_LIGHT_COUNT]; // first 3 light are fixed lights
+		this.availableLight = (this.availableLight + 1) % DYNAMIC_LIGHT_COUNT;
+		return pointLight;
 	}
 
+	removeGameObject(gameObject){
+		let index = this.gameObjects.indexOf(gameObject);
+		if (index != -1){
+			this.gameObjects.splice(index, 1);
+		}
+	}
 }

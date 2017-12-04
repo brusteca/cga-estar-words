@@ -5,6 +5,8 @@ class SkyDome extends GameObject {
 		// setup GLSL program
 		this.programInfo = shaderManager.programInfos['skybox'];
 
+		this.cameraDistance = 8192;
+		
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
 			a_position: {numComponents: 3, data: this.getGeometry()},
@@ -37,58 +39,58 @@ class SkyDome extends GameObject {
 	getGeometry() {
 		return new Float32Array([
 			// bottom
-			 8192, -8192, -8192,
-			-8192, -8192, -8192,
-			-8192, -8192,  8192,
+			 this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
+			-this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
+			-this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
 
-			-8192, -8192,  8192,
-			 8192, -8192,  8192,
-			 8192, -8192, -8192,
+			-this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
+			 this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
+			 this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
 
 			 // top
-			-8192,  8192,  8192,
-			-8192,  8192, -8192,
-			 8192,  8192, -8192,
+			-this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
+			-this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
+			 this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
 
-			 8192,  8192, -8192,
-			 8192,  8192,  8192,
-			-8192,  8192,  8192,
+			 this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
+			 this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
+			-this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
 
 			 // left
-			 8192,  8192, -8192,
-			 8192, -8192, -8192,
-			 8192, -8192,  8192,
+			 this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
+			 this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
+			 this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
 
-			 8192, -8192,  8192,
-			 8192,  8192,  8192,
-			 8192,  8192, -8192,
+			 this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
+			 this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
+			 this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
 
 			 // right
-			 -8192, -8192,  8192,
-			 -8192, -8192, -8192,
-			 -8192,  8192, -8192,
+			 -this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
+			 -this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
+			 -this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
 
-			 -8192,  8192, -8192,
-			 -8192,  8192,  8192,
-			 -8192, -8192,  8192,
+			 -this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
+			 -this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
+			 -this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
 
 			 // front
-			  8192, -8192,  8192,
-			 -8192, -8192,  8192,
-			 -8192,  8192,  8192,
+			  this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
+			 -this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
+			 -this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
 
-			 -8192,  8192,  8192,
-			  8192,  8192,  8192,
-			  8192, -8192,  8192,
+			 -this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
+			  this.cameraDistance,  this.cameraDistance,  this.cameraDistance,
+			  this.cameraDistance, -this.cameraDistance,  this.cameraDistance,
 
 			 // back
-			 -8192,  8192, -8192,
-			 -8192, -8192, -8192,
-			  8192, -8192, -8192,
+			 -this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
+			 -this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
+			  this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
 
-			  8192, -8192, -8192,
-			  8192,  8192, -8192,
-			 -8192,  8192, -8192
+			  this.cameraDistance, -this.cameraDistance, -this.cameraDistance,
+			  this.cameraDistance,  this.cameraDistance, -this.cameraDistance,
+			 -this.cameraDistance,  this.cameraDistance, -8192
 		]);
 	};
 

@@ -12,6 +12,10 @@ class LaserShootingBehaviorComponent extends BehaviorComponent {
 			// fire a laser!
 			var laserPosition = v3.create(0,0,0);
 			v3.add(this.owner.transform.position, v3.mulScalar(this.owner.getFrontDirection(), 10, laserPosition), laserPosition);
+
+			// fire a little from below
+			v3.add(this.owner.transform.position, v3.mulScalar(this.owner.getUpDirection(), -2, laserPosition), laserPosition);
+
 			// to do - rotate the laser!
 			var laserTransform = new Transform(laserPosition, m4.copy(this.owner.transform.rotation), v3.create(0.05,0.05,0.05));
 			var laserShot = new LaserShot(laserTransform);

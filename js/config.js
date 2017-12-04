@@ -3,12 +3,11 @@ var config = {
 
 	resources: {
 		models: {
-			// tie : {
-			// 	file : "resources/models/tie-intercept.obj",
-			// 	texture : "",
-			// 	color: { r: 200, g : 200, b : 200},
-			// 	front: { x: 0, y : 0, z : 1}
-			// },
+			tie : {
+				file : "resources/models/tie-intercept.obj",
+			 	color: { r: 200, g : 200, b : 200},
+			 	front: { x: 0, y : 0, z : 1}
+			},
 			// falcon : {
 			// 	file : "resources/models/millenium-falcon.obj",
 			// 	texture : "falcon.jpg",
@@ -27,6 +26,9 @@ var config = {
 			falcon : "resources/textures/falcon.jpg",
 			skybox : {
 				src: "resources/textures/space_skybox_1.png",
+			},
+			laser : {
+				src: "resources/textures/laser.png",
 			},
 			heightmap : "resources/heightmaps/heightmap_Poland_512x512_16c.png",
 			// heightmap : "resources/heightmaps/SluJkrJ_1024x1024.png",
@@ -55,6 +57,14 @@ var config = {
 				vertex: "3d-vertex-shader-skydome",
 				fragment: "3d-fragment-shader-skydome"
 			},
+			laser: {
+				vertex: "3d-vertex-shader-laser",
+				fragment: "3d-fragment-shader-laser"
+			},
+			laserExplotionParticle : {
+				vertex: "3d-vertex-shader-laser-explotion-particle",
+				fragment: "3d-fragment-shader-laser-explotion-particle"	
+			}
 		}
 	},
 
@@ -66,17 +76,18 @@ var config = {
 	},
 
 	models : [
+		/*
 		//{ type : "falcon", transform : { translate : {x : -600, y : -50, z : 800}, scale : { x : 0.5, y : 0.5, z : 0.5 }}, script : [] } ,
 		{ type : "tie", transform : { translate : {x : 60, y : 0, z : 0}, rotation : { x : 0, y : 90, z : 0} }, script : "tieScript1" },
 		{ type : "tie", transform : { translate : {x : 60, y : -240, z : 0}, rotation : { x : 0, y : 90, z : 0}}, script : "tieScript2" },
 		{ type : "tie", transform : { translate : {x : 60, y : -240, z : 0}, rotation : { x : 0, y : 90, z : 0}}, script : "tieGroup1" },
 		{ type : "tie", transform : { translate : {x : 40, y : -240, z : -20}, rotation : { x : 0, y : 90, z : 0}}, script : "tieGroup1" },
-		{ type : "tie", transform : { translate : {x : 40, y : -240, z : 20}, rotation : { x : 0, y : 90, z : 0}}, script : "tieGroup1" }
+		{ type : "tie", transform : { translate : {x : 40, y : -240, z : 20}, rotation : { x : 0, y : 90, z : 0}}, script : "tieGroup1" },
 		//{ type : "tie", transform : { translate : {x : -20, y : 20, z : -120}}, script : "tieGroup1" },
 		//{ type : "tie", transform : { translate : {x : -30, y : 25, z : -140}}, script : "tieGroup1" },
 		//{ type : "tie", transform : { translate : {x : -10, y : 20, z : -140}}, script : "tieGroup1" },
 		{ type : "rock", transform : { translate : {x : -10, y : 20, z : -140}}, script : [] },
-
+		*/
 	],
 
 	camera : {
@@ -93,7 +104,10 @@ var config = {
 		*/
 	],
 
-	// generic constants
-	laserSpeed : 10
+	// laser constants
+	laserSpeed : 10,
+	laserColor : [0.4, 0, 0],
 
+	// explotion constants
+	explotionSparkCount : 200
 }

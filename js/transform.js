@@ -17,6 +17,15 @@ class Transform {
 		this.calculateTransformMatrix();
 	}
 
+	copy(){
+		var t = new Transform(
+			v3.copy(this.position),
+			m4.copy(this.rotation),
+			v3.copy(this.scale)
+		);
+		return t;
+	}
+
 	setPosition(newPosition){
 		this.position = newPosition;
 	}
@@ -27,6 +36,21 @@ class Transform {
 
 	setScale(newScale){
 		this.scale = newScale;
+	}
+
+	translate(vector){
+		v3.add(this.position, vector, this.position);
+		this.calculateTransformMatrix();
+	}
+
+	rotateY(angle){
+		m4.rotateY(this.rotation, angle, this.rotation);
+		this.calculateTransformMatrix();
+	}
+
+	applyScale(ammount){
+		v3.mulScalar(this.scale, ammount, this.scale);
+		this.calculateTransformMatrix();
 	}
 
 	calculateTransformMatrix(){

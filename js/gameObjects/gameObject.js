@@ -19,6 +19,8 @@ class GameObject {
 	}
 
 	draw(viewProjectionMatrix, worldMatrix=null) {
+		this.setPreDrawGLProperties();
+
 		// Tell it to use our program (pair of shaders)
 		gl.useProgram(this.programInfo.program);
 		// Bind all the buffers and attributes of the program
@@ -33,6 +35,16 @@ class GameObject {
 		let primitiveType = gl.TRIANGLES;
 		let offset = 0;
 		gl.drawArrays(primitiveType, offset, this.bufferInfo.numElements);
+
+		this.setPostDrawGLProperties();
+	}
+
+	setPreDrawGLProperties(){
+
+	}
+
+	setPostDrawGLProperties(){
+
 	}
 
 	addGameObjectUniforms(uniforms, viewProjectionMatrix, worldMatrix){

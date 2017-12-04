@@ -143,8 +143,8 @@
 				// 	1.0,
 				// 	1.0 / (constAtt + linearAtt * v_distanceToLights[ii] + quadAtt * pow(v_distanceToLights[ii], 2.0))
 				// );
-				light += u_pointLightColors[ii].rgb * dot(normal, normalSurfaceToLightDirections[ii]);
 				if (v_distanceToLights[ii] < u_pointLightMaxDistances[ii]) {
+					light += u_pointLightColors[ii].rgb * dot(normal, normalSurfaceToLightDirections[ii]);				
 				}
 			}
 
@@ -210,8 +210,38 @@
 
 	<script id="3d-vertex-shader-laser" type="x-shader/x-vertex">
 		attribute vec4 a_position;
-		attribute vec3 a_normal;
+		attribute vec2 a_texcoord;
 
+		uniform mat4 u_world;
+		uniform mat4 u_worldViewProjection;
+		uniform mat4 u_worldInverseTranspose;
+
+		varying vec2 v_texcoord;
+
+		void main() {
+			// Multiply the position by the matrix.
+			gl_Position = u_worldViewProjection * a_position;
+
+			v_texcoord = a_texcoord;
+		}
+	</script> 
+	<script id="3d-fragment-shader-laser" type="x-shader/x-fragment">
+		precision mediump float;
+
+		uniform sampler2D u_texture;
+
+		// Passed in from the vertex shader.
+		varying vec2 v_texcoord;
+
+		void main() {
+			vec4 color = texture2D(u_texture, v_texcoord);
+			gl_FragColor = color;
+		}
+	</script>
+
+	<script id="3d-vertex-shader-laser-explotion-particle" type="x-shader/x-vertex">
+		attribute vec4 a_position;
+	
 		uniform vec4 u_color;
 
 		uniform mat4 u_world;
@@ -219,25 +249,19 @@
 		uniform mat4 u_worldInverseTranspose;
 
 		varying vec4 v_color;
-		varying vec3 v_normal;
 
 		void main() {
 			// Multiply the position by the matrix.
 			gl_Position = u_worldViewProjection * a_position;
-
-			// Pass the color to the fragment shader.
 			v_color = u_color;
-
-			// orient the normals and pass to the fragment shader
-			v_normal = mat3(u_worldInverseTranspose) * a_normal;
 		}
-	</script>
-	<script id="3d-fragment-shader-laser" type="x-shader/x-fragment">
+	</script> 
+	<script id="3d-fragment-shader-laser-explotion-particle" type="x-shader/x-fragment">
 		precision mediump float;
+
 
 		// Passed in from the vertex shader.
 		varying vec4 v_color;
-		varying vec3 v_normal; // gonna need this
 
 		void main() {
 			gl_FragColor = v_color;
@@ -329,6 +353,9 @@
 	<script type="text/javascript" src="js/gameObjects/floor.js"></script>
 	<script type="text/javascript" src="js/gameObjects/terrain.js"></script>
 	<script type="text/javascript" src="js/gameObjects/decorations.js"></script>
+	<script type="text/javascript" src="js/gameObjects/explotion.js"></script>
+	<script type="text/javascript" src="js/gameObjects/laserExplotionParticle.js"></script>
+
 	<!-- Lights -->
 	<script type="text/javascript" src="js/gameObjects/light.js"></script>
 

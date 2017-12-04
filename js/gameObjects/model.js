@@ -27,7 +27,7 @@ class Model extends GameObject{
 			this.useTexture = false;
 		}
 
-		this.behaviorComponent.instructions = script;
+		//this.behaviorComponent.instructions = script;
 	}
 
 	getGeometry() {
@@ -57,7 +57,6 @@ class Model extends GameObject{
 	};
 
 	getFrontDirection() {
-		// to do: multiply by rotation matrix
 		return this.frontDirection;
 	}
 }
