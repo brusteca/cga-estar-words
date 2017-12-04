@@ -6,7 +6,10 @@ var config = {
 			tie : {
 				file : "resources/models/tie-intercept.obj",
 			 	color: { r: 200, g : 200, b : 200},
-			 	front: { x: 0, y : 0, z : 1}
+			 	front: { x: 0, y : 0, z : 1},
+			 	lod_files: [
+				
+				]
 			},
 			// falcon : {
 			// 	file : "resources/models/millenium-falcon.obj",
