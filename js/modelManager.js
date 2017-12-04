@@ -4,15 +4,16 @@
 class ModelManager {
 
 	constructor(){
-		this.bufferInfos = {};
+		this.lodBufferInfos = {};
+		this.lodDistances = {};
 	}
 
-	loadModelBufferInfo(modelId, options) {
-		let modelPath = MODEL_BASE_PATH + options.file;
+	loadModelBufferInfo(modelId, options, ii) {
+		let modelPath = MODEL_BASE_PATH + options.lod_files[ii].file;
 		return new Promise((resolve, reject) => {
 			// new model, load it and store it
 			if (modelPath.endsWith('.obj')){
-				K3D.load(modelPath, function(obj_txt){
+				K3D.load(modelPath, (obj_txt) => {
 					let parsed_obj = K3D.parse.fromOBJ(obj_txt);
 					let verts = K3D.edit.unwrap(parsed_obj.i_verts, parsed_obj.c_verts, 3);
 					let normals = K3D.edit.unwrap(parsed_obj.i_norms, parsed_obj.c_norms, 3);
@@ -46,7 +47,36 @@ class ModelManager {
 				throw('Unsupported object format');
 			}
 		}).then((bufferInfo) => {
-			this.bufferInfos[modelId] = bufferInfo;
+			if (!(modelId in this.lodBufferInfos)) {
+				this.lodBufferInfos[modelId] = [];
+				this.lodDistances[modelId] = [];
+			}
+			// HACK: do this for easy sorting
+			bufferInfo.ESTARWORDS_lodDistance = options.lod_files[ii].max_distance;
+
+			this.lodBufferInfos[modelId].push(bufferInfo);
+			this.lodDistances[modelId].push(options.lod_files[ii].max_distance);
+
+			this.lodBufferInfos[modelId].sort((a, b) => {
+				let distance_a = a.ESTARWORDS_lodDistance;
+				let distance_b = b.ESTARWORDS_lodDistance;
+				if (distance_a < distance_b) {
+					return -1;
+				}
+				if (distance_b < distance_a) {
+					return 1;
+				}
+				return 0;
+			})
+			this.lodDistances[modelId].sort((a, b) => {
+				if (a < b) {
+					return -1;
+				}
+				if (b < a) {
+					return 1;
+				}
+				return 0;
+			})
 		});
 	}
 

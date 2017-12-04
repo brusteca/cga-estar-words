@@ -67,8 +67,8 @@ class World {
 		}
 	}
 
-	getCameraPosition(){
-		return this.camera.transform.position;
+	getCameraPosition(dst){
+		return this.camera.transform.getWorldPosition(dst);
 	}
 
 	getViewportCenter(){

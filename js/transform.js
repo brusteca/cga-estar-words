@@ -30,11 +30,15 @@ class Transform {
 		this.position = newPosition;
 	}
 
-	setRotation(newRotation){
+	setLocalPosition(newPosition){
+		this.position = newPosition;
+	}
+
+	setLocalRotation(newRotation){
 		this.rotation = newRotation;
 	}
 
-	setScale(newScale){
+	setLocalScale(newScale){
 		this.scale = newScale;
 	}
 
@@ -51,6 +55,10 @@ class Transform {
 	applyScale(ammount){
 		v3.mulScalar(this.scale, ammount, this.scale);
 		this.calculateTransformMatrix();
+	}
+
+	getWorldPosition(dst) {
+		return m4.getTranslation(this.transformMatrix, dst);
 	}
 
 	calculateTransformMatrix(){

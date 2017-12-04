@@ -16,7 +16,20 @@ var config = {
 			// },
 
 			rock: {
-				file: "resources/models/environment/rock1/Rock1.obj",
+				lod_files: [
+					{
+						file: "resources/models/environment/rock1/Rock1_100.obj",
+						max_distance: 300
+					},
+					{
+						file: "resources/models/environment/rock1/Rock1_50.obj",
+						max_distance: 800
+					},
+					{
+						file: "resources/models/environment/rock1/Rock1_10.obj",
+						max_distance: 10000
+					}
+				],
 				texture: 'rock_01',
 				color: { r: 200, g : 200, b : 200},
 				front: { x: 0, y : 0, z : 1}
@@ -88,6 +101,8 @@ var config = {
 		//{ type : "tie", transform : { translate : {x : -10, y : 20, z : -140}}, script : "tieGroup1" },
 		{ type : "rock", transform : { translate : {x : -10, y : 20, z : -140}}, script : [] },
 		*/
+		// { type : "rock", transform : { translate : {x : -10, y : 20, z : -140}}, script : [] },
+
 	],
 
 	camera : {
