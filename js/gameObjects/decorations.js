@@ -23,11 +23,28 @@ class Decorations extends GameObject {
 		function getRandomArbitrary(min, max) {
 			return Math.random() * (max - min) + min;
 		}
+		const models = [
+			'rock_01',
+			'rock_02',
+			'rock_03',
+			'rock_04',
+			'rock_05',
+			'rock_06'
+		];
+		const textures = [
+			'rock_01',
+			'rock_02',
+			'rock_03',
+			'rock_04',
+			'rock_05'
+		];
 		let minX = min_corner[0];
 		let minZ = min_corner[2];
 		let maxX = max_corner[0];
 		let maxZ = max_corner[2];
 		for (let ii = 0; ii < rockQty; ++ii) {
+			let modelId = models[Utils.randomInteger(0, models.length - 1)];
+			let textureId = textures[Utils.randomInteger(0, textures.length - 1)];
 			let positionX = getRandomArbitrary(minX, maxX);
 			let positionZ = getRandomArbitrary(minZ, maxZ);
 			let position = v3.create(positionX, 0, positionZ);
@@ -41,8 +58,8 @@ class Decorations extends GameObject {
 			// m4.rotateY(rotation, getRandomArbitrary(0, 2*Math.PI), rotation);
 			// m4.rotateZ(rotation, getRandomArbitrary(0, 2*Math.PI), rotation);
 			this.rocks.push(new Model(
-				'rock',
-				'rock_01',
+				modelId,
+				textureId,
 				new Transform(
 					position,
 					rotation,

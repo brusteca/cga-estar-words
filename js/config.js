@@ -8,7 +8,7 @@ var config = {
 			 	color: { r: 200, g : 200, b : 200},
 			 	front: { x: 0, y : 0, z : 1},
 			 	lod_files: [
-				
+
 				]
 			},
 			// falcon : {
@@ -18,7 +18,7 @@ var config = {
 			// 	front: { x: 0, y : 0, z : 1}
 			// },
 
-			rock: {
+			rock_01: {
 				lod_files: [
 					{
 						file: "resources/models/environment/rock1/Rock1_100.obj",
@@ -36,7 +36,82 @@ var config = {
 				texture: 'rock_01',
 				color: { r: 200, g : 200, b : 200},
 				front: { x: 0, y : 0, z : 1}
-			}
+			},
+			rock_02: {
+				lod_files: [
+					{
+						file: "resources/models/environment/rock2/Rock2_100.obj",
+						max_distance: 400
+					},
+					{
+						file: "resources/models/environment/rock2/Rock2_30.obj",
+						max_distance: 800
+					}
+				],
+				texture: 'rock_02',
+				color: { r: 200, g : 200, b : 200},
+				front: { x: 0, y : 0, z : 1}
+			},
+			rock_03: {
+				lod_files: [
+					{
+						file: "resources/models/environment/rock3/Rock3_100.obj",
+						max_distance: 400
+					},
+					{
+						file: "resources/models/environment/rock3/Rock3_30.obj",
+						max_distance: 800
+					}
+				],
+				texture: 'rock_03',
+				color: { r: 200, g : 200, b : 200},
+				front: { x: 0, y : 0, z : 1}
+			},
+			rock_04: {
+				lod_files: [
+					{
+						file: "resources/models/environment/rock4/Rock4_100.obj",
+						max_distance: 400
+					},
+					{
+						file: "resources/models/environment/rock4/Rock4_30.obj",
+						max_distance: 800
+					}
+				],
+				texture: 'rock_04',
+				color: { r: 200, g : 200, b : 200},
+				front: { x: 0, y : 0, z : 1}
+			},
+			rock_05: {
+				lod_files: [
+					{
+						file: "resources/models/environment/rock5/Rock5_100.obj",
+						max_distance: 400
+					},
+					{
+						file: "resources/models/environment/rock5/Rock5_20.obj",
+						max_distance: 800
+					}
+				],
+				texture: 'rock_05',
+				color: { r: 200, g : 200, b : 200},
+				front: { x: 0, y : 0, z : 1}
+			},
+			rock_06: {
+				lod_files: [
+					{
+						file: "resources/models/environment/rock6/Rock6_100.obj",
+						max_distance: 400
+					},
+					{
+						file: "resources/models/environment/rock6/Rock6_30.obj",
+						max_distance: 800
+					}
+				],
+				texture: 'rock_05',
+				color: { r: 200, g : 200, b : 200},
+				front: { x: 0, y : 0, z : 1}
+			},
 		},
 		textures: {
 			falcon : "resources/textures/falcon.jpg",
@@ -57,7 +132,19 @@ var config = {
 
 			// Environment
 			rock_01 :{
-				src: 'resources/textures/environment/rock1/Rock-Texture-Surface.jpg',
+				src: 'resources/textures/environment/rocks/Rock-Texture-Surface.jpg',
+			},
+			rock_02 :{
+				src: 'resources/textures/environment/rocks/rock5.jpg',
+			},
+			rock_03 :{
+				src: 'resources/textures/environment/rocks/rock6.jpg',
+			},
+			rock_04 :{
+				src: 'resources/textures/environment/rocks/rocktexture1.jpg',
+			},
+			rock_05 :{
+				src: 'resources/textures/environment/rocks/rocktexture2.jpg',
 			},
 		},
 		shaders: {
@@ -79,7 +166,7 @@ var config = {
 			},
 			laserExplotionParticle : {
 				vertex: "3d-vertex-shader-laser-explotion-particle",
-				fragment: "3d-fragment-shader-laser-explotion-particle"	
+				fragment: "3d-fragment-shader-laser-explotion-particle"
 			}
 		}
 	},
