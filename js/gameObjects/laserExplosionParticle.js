@@ -31,7 +31,7 @@ class LaserExplosionParticle extends GameObject{
 		let position = this.transform.position;
 		let terrainHeight = world.terrain.getHeightAt(position);
 		if (position[1] <= terrainHeight) {
-			this.particleEffect.removeParticle(this);			
+			this.particleEffect.removeParticle(this);
 		}
 
 		this.color[3] -= 0.5 * delta;
@@ -48,7 +48,7 @@ class LaserExplosionParticle extends GameObject{
 	getGeometry(length) {
 		return new Float32Array([
 			// horizontal
-			 length,  0, -1, 
+			 length,  0, -1,
 			-length,  0, -1,
 			-length,  0,  1,
 

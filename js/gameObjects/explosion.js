@@ -16,22 +16,49 @@ class Explosion extends GameObject{
 			// particle definition below in this file
 			let particleLength = Utils.randomUniformDistribution(10, 50);
 			let particleSpeed = v3.create(
-					Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1),
-					Utils.randomUniformDistribution(40, 60), // upwards
-					Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1));
+				Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1),
+				Utils.randomUniformDistribution(40, 60), // upwards
+				Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1)
+			);
 			let particleTransform = transform.copy();
 			particleTransform.rotateY(Math.PI * 0.5 + Utils.randomUniformDistribution(-Math.PI * 0.01,Math.PI * 0.01) + Math.atan2(particleSpeed[0], particleSpeed[2]));
 			particleTransform.applyScale(0.03);
 			this.particles.push(new LaserExplosionParticle(particleTransform, particleSpeed, particleLength, this));
 		}
+
+		this.light = world.getFreeDynamicLight();
+		this.light.color = [1, 1, 1];
+		this.light.intensity = 10000;
+		this.light.owner = this;
 	}
 
 	update(delta){
 		super.update(delta);
-
+		// if I still have control over my light
+		if (this.light.owner == this) {
+			this.light.update();
+			this.light.transform.position[1] += 10;
+			this.light.transform.calculateTransformMatrix();
+		}
 		for (var i = 0; i < this.particles.length; i++){
 			// particle definition below in this file
 			this.particles[i].update(delta);
+		}
+		// gradually diminish strength
+		if (this.light.intensity > 2000) {
+			this.light.intensity -= 200;
+		} else if (this.light.intensity > 300) {
+			this.light.intensity -= 100;
+		} else if (this.light.intensity > 0) {
+			this.light.intensity -= 50;
+		}
+		// when all the effects are done, stop
+		if (this.particles.length == 0 && (this.light.owner != this || this.light.intensity <= 0)){
+			world.removeGameObject(this);
+			if (this.light.owner == this) {
+				this.light.intensity = 0;
+				this.light.owner = null;
+			}
 		}
 
 		/*
@@ -61,10 +88,6 @@ class Explosion extends GameObject{
 		let index = this.particles.indexOf(particle);
 		if (index != -1){
 			this.particles.splice(index, 1);
-		}
-
-		if (this.particles.length == 0){
-			world.removeGameObject(this);
 		}
 	}
 }

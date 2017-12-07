@@ -62,8 +62,8 @@ class Transform {
 		}
 	}
 
-	applyScale(ammount, calculateTransform=true){
-		v3.mulScalar(this.scale, ammount, this.scale);
+	applyScale(amount, calculateTransform=true){
+		v3.mulScalar(this.scale, amount, this.scale);
 		if (calculateTransform) {
 			this.calculateTransformMatrix();
 		}
