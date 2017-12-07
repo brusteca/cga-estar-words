@@ -1,11 +1,11 @@
 'use strict';
 
-class LaserExplotionParticle extends GameObject{
+class LaserExplosionParticle extends GameObject{
 
 	constructor(transform, speed, length, particleEffect) {
 		super(transform);
 		// setup GLSL program
-		this.programInfo = shaderManager.programInfos['laserExplotionParticle'];
+		this.programInfo = shaderManager.programInfos['laserExplosionParticle'];
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders

@@ -1,7 +1,7 @@
 'use strict';
 
-// an explotion is just a collection of different particle effects
-class Explotion extends GameObject{
+// an explosion is just a collection of different particle effects
+class Explosion extends GameObject{
 
 	constructor(transform) {
 		super(transform);
@@ -12,7 +12,7 @@ class Explotion extends GameObject{
 
 		this.particles = [];
 
-		for (var i = 0; i < config.explotionSparkCount; i++){
+		for (var i = 0; i < config.explosionSparkCount; i++){
 			// particle definition below in this file
 			let particleLength = Utils.randomUniformDistribution(10, 50);
 			let particleSpeed = v3.create(
@@ -22,7 +22,7 @@ class Explotion extends GameObject{
 			let particleTransform = transform.copy();
 			particleTransform.rotateY(Math.PI * 0.5 + Utils.randomUniformDistribution(-Math.PI * 0.01,Math.PI * 0.01) + Math.atan2(particleSpeed[0], particleSpeed[2]));
 			particleTransform.applyScale(0.03);
-			this.particles.push(new LaserExplotionParticle(particleTransform, particleSpeed, particleLength, this));
+			this.particles.push(new LaserExplosionParticle(particleTransform, particleSpeed, particleLength, this));
 		}
 	}
 

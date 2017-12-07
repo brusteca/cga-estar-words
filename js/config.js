@@ -167,9 +167,9 @@ var config = {
 				vertex: "3d-vertex-shader-laser",
 				fragment: "3d-fragment-shader-laser"
 			},
-			laserExplotionParticle : {
-				vertex: "3d-vertex-shader-laser-explotion-particle",
-				fragment: "3d-fragment-shader-laser-explotion-particle"
+			laserExplosionParticle : {
+				vertex: "3d-vertex-shader-laser-explosion-particle",
+				fragment: "3d-fragment-shader-laser-explosion-particle"
 			}
 		}
 	},
@@ -216,6 +216,6 @@ var config = {
 	laserSpeed : 10,
 	laserColor : [0.4, 0, 0],
 
-	// explotion constants
-	explotionSparkCount : 200
+	// explosion constants
+	explosionSparkCount : 200
 }
