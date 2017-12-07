@@ -17,12 +17,14 @@ class Light extends GameObject {
 };
 
 class PointLight extends Light {
-	constructor(transform, color, max_distance) {
+	constructor(transform, color, intensity=-1) {
 		super(transform, color);
-		this.max_distance = max_distance;
+		// if intensity is -1 then the light won't have attenuation
+		this.intensity = intensity;
+		this.owner = null;
 	}
 
-	getPosition(){
+	getWorldPosition(){
 		return [
 			this.transform.transformMatrix[12],
 			this.transform.transformMatrix[13],
@@ -30,7 +32,14 @@ class PointLight extends Light {
 		];
 	}
 
-	getMaxDistance(){
-		return this.max_distance;
+	getIntensity(){
+		return this.intensity;
+	}
+
+	update(delta) {
+		super.update(delta);
+		if (this.owner != null && this.owner != world) {
+			this.transform.setLocalPosition(this.owner.transform.position);
+		}
 	}
 };

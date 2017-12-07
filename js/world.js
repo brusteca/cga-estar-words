@@ -31,17 +31,17 @@ class World {
 		// TODO: don't make a new instance each time
 		this.pointLightPositions = new Float32Array(
 			[].concat.apply([], this.pointLights.map(
-				pointLight =>  pointLight.getPosition()
+				pointLight => pointLight.getWorldPosition()
 			))
 		);
 		this.pointLightColors = new Float32Array(
 			[].concat.apply([], this.pointLights.map(
-				pointLight =>  pointLight.getColor()
+				pointLight => pointLight.getColor()
 			))
 		);
-		this.pointLightMaxDistances = new Float32Array(
+		this.pointLightIntensities = new Float32Array(
 			this.pointLights.map(
-				pointLight =>  pointLight.getMaxDistance()
+				pointLight => pointLight.getIntensity()
 			)
 		);
 	}
@@ -50,16 +50,21 @@ class World {
 		this.physics.step(delta_seconds);
 		this.events.update(delta_seconds);
 
+		// only lights that don't have owner are updated here
 		for (let ii = 0, len = this.pointLights.length; ii < len; ++ii){
-			this.pointLights[ii].update(delta_seconds);
+			let light = this.pointLights[ii];
+			if (light.owner == null || light.owner == this) {
+				light.update(delta_seconds);
+			}
 		}
-		// after updating the lights, set the internal cache
-		this.setLightPositionsAndColors();
 
-		// reverse loop cause some game objects can remove themseles from the gameObjects array on updat4e
+		// reverse loop cause some game objects can remove themseles from the gameObjects array on update
 		for (let ii = this.gameObjects.length - 1; ii >= 0; --ii) {
 			this.gameObjects[ii].update(delta_seconds, gameTime);
 		}
+
+		// after updating the lights, set the internal cache
+		this.setLightPositionsAndColors();
 
 		// disable the 'one time' hits
 		for (var i = 0; i < keyStatus.length; i++){

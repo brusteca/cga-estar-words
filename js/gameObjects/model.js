@@ -47,7 +47,6 @@ class Model extends GameObject{
 		} else {
 			this.bufferInfo = this.lodBufferInfos[0];
 		}
-
 	}
 
 	getGeometry() {

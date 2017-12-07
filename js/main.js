@@ -40,7 +40,7 @@ function main() {
 	}
 	// Set clear color to black, fully opaque
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	
+
 	 // Turn on culling. By default backfacing triangles
     // will be culled.
     gl.enable(gl.CULL_FACE);
@@ -52,16 +52,16 @@ function main() {
     gl.colorMask(1, 1, 1, 1);
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
-     
+
 	world = new World(config.globalEvents, config.camera.position);
 
 	let numLights = 16;
 	STATIC_LIGHT_COUNT = 3;
 	DYNAMIC_LIGHT_COUNT = numLights - STATIC_LIGHT_COUNT;
 	let pointLightPositions = [
-		-30, 60, 40,
+		3200, 1600, -40,
 		-30, 60, -40,
-		-550, 60, 150,
+		-3000, 1560, 150,
 		0, 0, 0,
 		0, 0, 0,
 		0, 0, 0,
@@ -77,9 +77,12 @@ function main() {
 		0, 0, 0
 	];
 	let pointLightColors = [
-		0.0, 0.0, 0.5,
-		0.0, 0.5, 0.0,
-		0.8, 0.0, 0.3,
+		0, 0.1, 0.08,
+		0, 0, 0,
+		// 0, 0, 0,
+		// 0.0, 0.0, 0.5,
+		// 0.0, 0.5, 0.0,
+		0.7, 0.28, 0.28,
 		0, 0, 0,
 		0, 0, 0,
 		0, 0, 0,
@@ -94,10 +97,10 @@ function main() {
 		0, 0, 0,
 		0, 0, 0
 	];
-	let pointLightMaxDistances = [
-		10000,
-		10000,
-		10000,
+	let pointLightIntensities = [
+		-1,
+		-1,
+		-1,
 		0,
 		0,
 		0,
@@ -126,7 +129,7 @@ function main() {
 				pointLightColors[ii+1],
 				pointLightColors[ii+2]
 			],
-			pointLightMaxDistances[ii/3]
+			pointLightIntensities[ii/3]
 		));
 	}
 
@@ -204,7 +207,7 @@ function main() {
 		function mainLoop(timestamp) {
 
 			let current = timestamp;
-			let elapsed = current - previous; 
+			let elapsed = current - previous;
 			previous = current;
 
 			if (!paused){
@@ -281,23 +284,24 @@ function main() {
 
 	function parseModel(configModel){
 		let modelDefaults = config.resources.models[configModel.type]
-		var texture = modelDefaults.texture == undefined? null : (modelDefaults.texture);
+		var texture = (modelDefaults.texture == undefined)? null : (modelDefaults.texture);
 		var color = configModel.color || modelDefaults.color || {};
 		var configTransform = configModel.transform || {};
-		var translate = configTransform.translate || {};
-		var rotation = configTransform.rotation || {};
-		var scale = configTransform.scale || {};
+		var translate = configTransform.translate || { x : 0, y : 0, z : 0};
+		var rotation = configTransform.rotation || { x : 0, y : 0, z : 0};
+		var scale = configTransform.scale || { x : 0, y : 0, z : 0};
+		console.log(translate, rotation, scale);
 		var rotationMatrix = m4.create();
 		// works when rotating towards just one axis, two at best with the right combination
 		var transform = new Transform(
-			v3.create(translate.x || 0 ,translate.y || 0, translate.z || 0),
+			v3.create(translate.x, translate.y, translate.z),
 			rotationMatrix,
-			v3.create(scale.x || 1, scale.y || 1, scale.z || 1)
+			v3.create(scale.x, scale.y, scale.z)
 		);
 		var script = config.scripts[configModel.script] || [];
 		var model = instanciateModel(configModel.type, texture, transform, script);
 
-		model.rotate(degreesToRadians(rotation.x) || 0, degreesToRadians(rotation.y) || 0, degreesToRadians(rotation.z) || 0);
+		model.rotate(degreesToRadians(rotation.x), degreesToRadians(rotation.y), degreesToRadians(rotation.z));
 
 		model.frontDirection = v3.normalize(v3.create(modelDefaults.front.x, modelDefaults.front.y, modelDefaults.front.z));
 		return model;
@@ -309,7 +313,7 @@ function main() {
 			case "falcon":
 				return new Ship(modelId, textureId, transform, script);
 				break;
-			case "rock":
+			case "rock_01":
 				return new Model(modelId, textureId, transform, script);
 		}
 		return null; // breaks the caller, but we will know :)
@@ -352,7 +356,7 @@ document.onkeyup = function(event){
 document.onkeydown = function(event){
 	// capture script
 	if (captureInput && !keyStatus[event.keyCode].pressed){
-		capturedCommands.push({ time : Math.round(gameTime * 100) / 100, key : event.keyCode, duration : 0});		
+		capturedCommands.push({ time : Math.round(gameTime * 100) / 100, key : event.keyCode, duration : 0});
 	}
 
 	keyStatus[event.keyCode].pressed = true;
@@ -545,7 +549,7 @@ function loadResources(initGame){
 			});
 		}
 
-		queryProgram();	
+		queryProgram();
 	}
 	/*
 	for (snd in soundSources){
@@ -554,5 +558,3 @@ function loadResources(initGame){
 	}*/
 	requestAnimationFrame(preloader);
 }
-
-

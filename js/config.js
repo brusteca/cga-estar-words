@@ -4,12 +4,15 @@ var config = {
 	resources: {
 		models: {
 			tie : {
-				file : "resources/models/tie-intercept.obj",
-			 	color: { r: 200, g : 200, b : 200},
-			 	front: { x: 0, y : 0, z : 1},
-			 	lod_files: [
-
-				]
+				color: { r: 200, g : 200, b : 200},
+				front: { x: 0, y : 0, z : 1},
+				lod_files: [
+					{
+						file: "resources/models/tie-intercept.obj",
+						max_distance: -1
+					},
+				],
+				texture: 'rock_01',
 			},
 			// falcon : {
 			// 	file : "resources/models/millenium-falcon.obj",
@@ -132,7 +135,7 @@ var config = {
 
 			// Environment
 			rock_01 :{
-				src: 'resources/textures/environment/rocks/Rock-Texture-Surface.jpg',
+				src: 'resources/textures/environment/rocks/rock-texture-surface.jpg',
 			},
 			rock_02 :{
 				src: 'resources/textures/environment/rocks/rock5.jpg',
@@ -179,19 +182,19 @@ var config = {
 	},
 
 	models : [
-		/*
+
 		//{ type : "falcon", transform : { translate : {x : -600, y : -50, z : 800}, scale : { x : 0.5, y : 0.5, z : 0.5 }}, script : [] } ,
+
 		{ type : "tie", transform : { translate : {x : 60, y : 0, z : 0}, rotation : { x : 0, y : 90, z : 0} }, script : "tieScript1" },
 		{ type : "tie", transform : { translate : {x : 60, y : -240, z : 0}, rotation : { x : 0, y : 90, z : 0}}, script : "tieScript2" },
 		{ type : "tie", transform : { translate : {x : 60, y : -240, z : 0}, rotation : { x : 0, y : 90, z : 0}}, script : "tieGroup1" },
 		{ type : "tie", transform : { translate : {x : 40, y : -240, z : -20}, rotation : { x : 0, y : 90, z : 0}}, script : "tieGroup1" },
 		{ type : "tie", transform : { translate : {x : 40, y : -240, z : 20}, rotation : { x : 0, y : 90, z : 0}}, script : "tieGroup1" },
+
 		//{ type : "tie", transform : { translate : {x : -20, y : 20, z : -120}}, script : "tieGroup1" },
 		//{ type : "tie", transform : { translate : {x : -30, y : 25, z : -140}}, script : "tieGroup1" },
 		//{ type : "tie", transform : { translate : {x : -10, y : 20, z : -140}}, script : "tieGroup1" },
-		{ type : "rock", transform : { translate : {x : -10, y : 20, z : -140}}, script : [] },
-		*/
-		// { type : "rock", transform : { translate : {x : -10, y : 20, z : -140}}, script : [] },
+		// { type : "rock_01", transform : { translate : {x : -10, y : 20, z : -140}, scale: {x: 100, y: 100, z: 100}}, script : [] },
 
 	],
 

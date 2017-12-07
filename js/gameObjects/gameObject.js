@@ -6,7 +6,7 @@ class GameObject {
 		// el setup de los programas y eso se hacen en los hijos
 		// pero eventualmente mete algo en this.programInfo y this.bufferInfo
 		// fijarse en la clase Efe
-		this.behaviorComponents = []; 
+		this.behaviorComponents = [];
 		this.motionComponent = new MotionComponent(this);
 		this.inputComponent = new InputComponent();
 	}
@@ -62,6 +62,7 @@ class GameObject {
 
 		uniforms.u_world = currentWorldMatrix;
 		uniforms.u_worldInverseTranspose = m4.inverse(currentWorldMatrix);
+		m4.transpose(uniforms.u_worldInverseTranspose, uniforms.u_worldInverseTranspose);
 		uniforms.u_worldViewProjection = currentViewMatrix;
 	}
 
@@ -71,7 +72,7 @@ class GameObject {
 			u_cameraPosition: world.getCameraPosition(),
 			u_pointLightPositions: world.pointLightPositions,
 			u_pointLightColors: world.pointLightColors,
-			u_pointLightMaxDistances: world.pointLightMaxDistances,
+			u_pointLightIntensities: world.pointLightIntensities,
 			u_texture: this.texture,
 			u_useTexture : (this.texture != null)
 		};
@@ -90,7 +91,7 @@ class GameObject {
 	}
 
 	rotate(x, y, z){
-		// CAREFUL! This method works only one time and with one axis, after that you'll be 
+		// CAREFUL! This method works only one time and with one axis, after that you'll be
 		// rotating against the wrong axis. Use Quaternions for improvement (see shipMotion class)
 		var rotationMatrix = this.transform.rotation;
 		m4.rotateX(rotationMatrix, x, rotationMatrix);

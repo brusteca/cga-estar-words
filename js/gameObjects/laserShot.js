@@ -20,41 +20,46 @@ class LaserShot extends GameObject{
 
  		this.color = [ 1, 0, 0, 1 ]; // pure red, maybe add as an attribute?
 
- 		// controls movement. Its' overkill, as that motion component has plenty more options, 
+ 		// controls movement. Its' overkill, as that motion component has plenty more options,
  		// but at least we are reusing components. Name could change, though.
  		this.motionComponent = new SpaceShipMotionComponent(this);
 
- 		// front direction is used to control where the laser moves 
+ 		// front direction is used to control where the laser moves
  		// required by the motion component
  		this.frontDirection = null;
 
-		this.light = world.getFreeDynamicLight();		
+		this.light = world.getFreeDynamicLight();
 		this.light.color = config.laserColor;
-		this.light.max_distance = 250;
+		this.light.intensity = 200;
+		this.light.owner = this;
 	}
 
 	update(delta){
 		super.update(delta);
 
-		this.light.transform.transformMatrix[12] = this.transform.transformMatrix[12];
-		this.light.transform.transformMatrix[13] = this.transform.transformMatrix[13];
-		this.light.transform.transformMatrix[14] = this.transform.transformMatrix[14];
-
-		// collision against terrain
+		// if I still have control over my light
+		if (this.light.owner == this) {
+			this.light.update();
+		}
 		let position = this.transform.position;
 		let terrainHeight = world.terrain.getHeightAt(position);
-		if (position[1] <= terrainHeight) {
-			world.removeGameObject(this);			
-			this.light.max_distance = 0;
-			// to do: return light in some way to world
+		// collision against terrain or the shot is outside the terrain
+		if (position[1] <= terrainHeight || terrainHeight == -Number.MAX_SAFE_INTEGER) {
+			world.removeGameObject(this);
+			// if I still have control over my light
+			if (this.light.owner == this) {
+				this.light.intensity = 0;
+				this.light.owner = null;
+			}
+			// make an explosion if the shot hit the terrain
+			if (position[1] <= terrainHeight) {
+				let explotionPosition = v3.copy(position);
+				explotionPosition[1] = terrainHeight;
+				let explotion = new Explotion(new Transform(explotionPosition));
+				world.gameObjects.push(explotion);
+			}
 
-			let explotionPosition = v3.copy(position);
-			explotionPosition[1] = terrainHeight;
-			let explotion = new Explotion(new Transform(explotionPosition));
-			world.gameObjects.push(explotion);
-		}	
-
-		// check if it's out of the 
+		}
 	}
 
 	setPreDrawGLProperties(){
@@ -82,7 +87,7 @@ class LaserShot extends GameObject{
 	getGeometry() {
 		return new Float32Array([
 			// horizontal
-			 250,  0, -3, 
+			 250,  0, -3,
 			-250,  0, -3,
 			-250,  0,  3,
 
@@ -91,7 +96,7 @@ class LaserShot extends GameObject{
 			 250,  0, -3,
 
 			 // vertical
-			 250, -3,  0, 
+			 250, -3,  0,
 			-250, -3,  0,
 			-250,  3,  0,
 
@@ -101,9 +106,9 @@ class LaserShot extends GameObject{
 
 
 			 /*
-			
+
 			 // left
-			 
+
 
 			 // right
 			 -250, -3,  3,

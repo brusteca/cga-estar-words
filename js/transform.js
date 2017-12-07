@@ -21,40 +21,52 @@ class Transform {
 		var t = new Transform(
 			v3.copy(this.position),
 			m4.copy(this.rotation),
-			v3.copy(this.scale)
+			v3.copy(this.scale),
+			this.parent
 		);
 		return t;
 	}
 
-	setPosition(newPosition){
-		this.position = newPosition;
+	setLocalPosition(newPosition, calculateTransform=true){
+		v3.copy(newPosition, this.position);
+		if (calculateTransform) {
+			this.calculateTransformMatrix();
+		}
 	}
 
-	setLocalPosition(newPosition){
-		this.position = newPosition;
+	setLocalRotation(newRotation, calculateTransform=true){
+		m4.copy(newRotation, this.rotation);
+		if (calculateTransform) {
+			this.calculateTransformMatrix();
+		}
 	}
 
-	setLocalRotation(newRotation){
-		this.rotation = newRotation;
+	setLocalScale(newScale, calculateTransform=true){
+		v3.copy(newScale, this.scale);
+		if (calculateTransform) {
+			this.calculateTransformMatrix();
+		}
 	}
 
-	setLocalScale(newScale){
-		this.scale = newScale;
-	}
-
-	translate(vector){
+	translate(vector, calculateTransform=true){
 		v3.add(this.position, vector, this.position);
-		this.calculateTransformMatrix();
+		if (calculateTransform) {
+			this.calculateTransformMatrix();
+		}
 	}
 
-	rotateY(angle){
+	rotateY(angle, calculateTransform=true){
 		m4.rotateY(this.rotation, angle, this.rotation);
-		this.calculateTransformMatrix();
+		if (calculateTransform) {
+			this.calculateTransformMatrix();
+		}
 	}
 
-	applyScale(ammount){
+	applyScale(ammount, calculateTransform=true){
 		v3.mulScalar(this.scale, ammount, this.scale);
-		this.calculateTransformMatrix();
+		if (calculateTransform) {
+			this.calculateTransformMatrix();
+		}
 	}
 
 	getWorldPosition(dst) {

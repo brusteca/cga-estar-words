@@ -16,11 +16,12 @@ class Ship extends Model{
 
 		this.baseLeftDirection = v3.create(-1,0,0);
 		this.leftDirection = v3.copy(this.baseLeftDirection);
+		console.log(this);
 	}
 
 	update(delta){
 		super.update(delta);
-
+		this.transform.setLocalPosition(v3.create([60, -240, 0]));
 		m4.transformDirection(this.transform.rotation, this.baseFrontDirection, this.frontDirection);
 		m4.transformDirection(this.transform.rotation, this.baseUpDirection, this.upDirection);
 		m4.transformDirection(this.transform.rotation, this.baseLeftDirection, this.leftDirection);

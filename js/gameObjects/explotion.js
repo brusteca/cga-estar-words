@@ -6,9 +6,9 @@ class Explotion extends GameObject{
 	constructor(transform) {
 		super(transform);
 
-		//this.light = world.getFreeDynamicLight();		
+		//this.light = world.getFreeDynamicLight();
 		//this.light.color = config.laserColor;
-		//this.light.max_distance = 250;
+		//this.light.intensity = 1000;
 
 		this.particles = [];
 
@@ -16,7 +16,7 @@ class Explotion extends GameObject{
 			// particle definition below in this file
 			let particleLength = Utils.randomUniformDistribution(10, 50);
 			let particleSpeed = v3.create(
-					Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1), 
+					Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1),
 					Utils.randomUniformDistribution(40, 60), // upwards
 					Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1));
 			let particleTransform = transform.copy();
@@ -43,11 +43,11 @@ class Explotion extends GameObject{
 		let position = this.transform.position;
 		let height = world.terrain.getHeightAt(position);
 		if (position[1] <= height) {
-			world.removeGameObject(this);			
-			this.light.max_distance = 0;
+			world.removeGameObject(this);
+			this.light.intensity = 0;
 			// to do: return light in some way
 		}
-		*/	
+		*/
 	}
 
 	draw(viewProjectionMatrix, worldMatrix = null){
@@ -68,5 +68,3 @@ class Explotion extends GameObject{
 		}
 	}
 }
-
-
