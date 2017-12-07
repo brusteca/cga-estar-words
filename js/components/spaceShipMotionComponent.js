@@ -16,11 +16,11 @@ class SpaceShipMotionComponent extends MotionComponent{
 	update(delta){
 		super.update(delta);
 
-		// rotate the gameobject 
+		// rotate the gameobject
 		if (this.angularSpeed > 0){
 			var q = new Quaternion(1, v3.mulScalar(this.angularSpeedDirection, this.angularSpeed * delta)).normalize();
 			this.rotation = this.rotation.mul(q);
-			this.owner.transform.rotation = this.rotation.toMatrix4();
+			this.owner.transform.setLocalRotation(this.rotation.toMatrix4(), false);
 		}
 
 		// speed
@@ -51,6 +51,6 @@ class SpaceShipMotionComponent extends MotionComponent{
 		q = new Quaternion(1, v3.mulScalar(v3.create(0,0,1), z)).normalize();
 		this.rotation = this.rotation.mul(q);
 
-		this.owner.transform.rotation = this.rotation.toMatrix4();
+		this.owner.transform.setLocalRotation(this.rotation.toMatrix4());
 	}
 }

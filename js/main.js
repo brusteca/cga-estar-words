@@ -289,8 +289,7 @@ function main() {
 		var configTransform = configModel.transform || {};
 		var translate = configTransform.translate || { x : 0, y : 0, z : 0};
 		var rotation = configTransform.rotation || { x : 0, y : 0, z : 0};
-		var scale = configTransform.scale || { x : 0, y : 0, z : 0};
-		console.log(translate, rotation, scale);
+		var scale = configTransform.scale || { x : 1, y : 1, z : 1};
 		var rotationMatrix = m4.create();
 		// works when rotating towards just one axis, two at best with the right combination
 		var transform = new Transform(
