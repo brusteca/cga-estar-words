@@ -6,23 +6,20 @@ class Explosion extends GameObject{
 	constructor(transform) {
 		super(transform);
 
-		//this.light = world.getFreeDynamicLight();
-		//this.light.color = config.laserColor;
-		//this.light.intensity = 1000;
-
 		this.particles = [];
 
 		for (var i = 0; i < config.explosionSparkCount; i++){
 			// particle definition below in this file
-			let particleLength = Utils.randomUniformDistribution(10, 50);
+			let particleLength = Utils.randomUniformDistribution(2, 12);
 			let particleSpeed = v3.create(
-				Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1),
-				Utils.randomUniformDistribution(40, 60), // upwards
-				Utils.randomUniformDistribution(0, 30) * (Utils.randomBoolean()? -1 : 1)
+				Utils.randomUniformDistribution(0, 50) * (Utils.randomBoolean()? -1 : 1),
+				Utils.randomUniformDistribution(60, 100), // upwards
+				Utils.randomUniformDistribution(0, 50) * (Utils.randomBoolean()? -1 : 1)
 			);
 			let particleTransform = transform.copy();
+			particleTransform.position[1] += 2;
 			particleTransform.rotateY(Math.PI * 0.5 + Utils.randomUniformDistribution(-Math.PI * 0.01,Math.PI * 0.01) + Math.atan2(particleSpeed[0], particleSpeed[2]));
-			particleTransform.applyScale(0.03);
+			particleTransform.applyScale(0.3);
 			this.particles.push(new LaserExplosionParticle(particleTransform, particleSpeed, particleLength, this));
 		}
 
@@ -49,8 +46,13 @@ class Explosion extends GameObject{
 			this.light.intensity -= 200;
 		} else if (this.light.intensity > 300) {
 			this.light.intensity -= 100;
+		} else if (this.light.intensity > 50) {
+			this.light.intensity -= 25;
+			this.light.color[2] -= 0.06;
 		} else if (this.light.intensity > 0) {
-			this.light.intensity -= 50;
+			this.light.intensity -= 5;
+			this.light.transform.position[1] += 0.6;
+			this.light.transform.calculateTransformMatrix
 		}
 		// when all the effects are done, stop
 		if (this.particles.length == 0 && (this.light.owner != this || this.light.intensity <= 0)){
@@ -60,21 +62,6 @@ class Explosion extends GameObject{
 				this.light.owner = null;
 			}
 		}
-
-		/*
-		this.light.transform.transformMatrix[12] = this.transform.transformMatrix[12];
-		this.light.transform.transformMatrix[13] = this.transform.transformMatrix[13];
-		this.light.transform.transformMatrix[14] = this.transform.transformMatrix[14];
-
-		// collision against terrain
-		let position = this.transform.position;
-		let height = world.terrain.getHeightAt(position);
-		if (position[1] <= height) {
-			world.removeGameObject(this);
-			this.light.intensity = 0;
-			// to do: return light in some way
-		}
-		*/
 	}
 
 	draw(viewProjectionMatrix, worldMatrix = null){

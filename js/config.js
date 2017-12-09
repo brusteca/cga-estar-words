@@ -217,5 +217,5 @@ var config = {
 	laserColor : [0.4, 0, 0],
 
 	// explosion constants
-	explosionSparkCount : 200
+	explosionSparkCount : 400
 }
