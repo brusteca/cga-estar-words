@@ -2,7 +2,7 @@
 
 class LaserExplosionParticle extends GameObject{
 
-	constructor(transform, speed, length, particleEffect) {
+	constructor(transform, speed, length, color, particleEffect) {
 		super(transform);
 		// setup GLSL program
 		this.programInfo = shaderManager.programInfos['laserExplosionParticle'];
@@ -13,7 +13,7 @@ class LaserExplosionParticle extends GameObject{
 		};
 
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
- 		this.color = [ 1, 0.6, 0, 1 ]; // orange
+ 		this.color = color;
 
  		this.acceleration = v3.create(0, -3, 0); // just gravity
  		this.speed = speed;

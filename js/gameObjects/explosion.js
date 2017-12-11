@@ -10,7 +10,16 @@ class Explosion extends GameObject{
 
 		for (var i = 0; i < config.explosionSparkCount; i++){
 			// particle definition below in this file
-			let particleLength = Utils.randomUniformDistribution(2, 12);
+			let particleLength, particleColor
+			if (Math.random() < config.dirtToSparkRatio) {
+				// it's a dirt particle
+				particleLength = 2.5;
+				particleColor = [0.333, 0.151, 0.117, 1];
+			} else {
+				// it's a spark
+				particleLength = Utils.randomUniformDistribution(2, 12);
+				particleColor = [ 1, 0.6, 0, 1 ]; // orange
+			}
 			let particleSpeed = v3.create(
 				Utils.randomUniformDistribution(0, 50) * (Utils.randomBoolean()? -1 : 1),
 				Utils.randomUniformDistribution(60, 100), // upwards
@@ -20,7 +29,11 @@ class Explosion extends GameObject{
 			particleTransform.position[1] += 2;
 			particleTransform.rotateY(Math.PI * 0.5 + Utils.randomUniformDistribution(-Math.PI * 0.01,Math.PI * 0.01) + Math.atan2(particleSpeed[0], particleSpeed[2]));
 			particleTransform.applyScale(0.3);
-			this.particles.push(new LaserExplosionParticle(particleTransform, particleSpeed, particleLength, this));
+			this.particles.push(
+				new LaserExplosionParticle(
+					particleTransform, particleSpeed, particleLength, particleColor, this
+				)
+			);
 		}
 
 		this.light = world.getFreeDynamicLight();

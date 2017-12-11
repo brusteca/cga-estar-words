@@ -217,5 +217,6 @@ var config = {
 	laserColor : [0.4, 0, 0],
 
 	// explosion constants
-	explosionSparkCount : 400
+	explosionSparkCount : 400,
+	dirtToSparkRatio : 0.6
 }
