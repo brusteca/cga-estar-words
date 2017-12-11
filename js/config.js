@@ -121,8 +121,8 @@ var config = {
 			skybox : {
 				src: "resources/textures/space_skybox_1.png",
 			},
-			laser : {
-				src: "resources/textures/laser.png",
+			redLaser : {
+				src: "resources/textures/redLaser.png",
 			},
 			heightmap : "resources/heightmaps/heightmap_Poland_512x512_16c.png",
 			// heightmap : "resources/heightmaps/SluJkrJ_1024x1024.png",
@@ -213,8 +213,26 @@ var config = {
 	],
 
 	// laser constants
-	laserSpeed : 10,
-	laserColor : [0.4, 0, 0],
+	lasers: {
+		'red': {
+			speed: 10,
+			color: [1, 0, 0],
+			lightIntensity: 80,
+			texture: 'redLaser'
+		},
+		'green': {
+			speed: 10,
+			color: [0, 1, 0],
+			lightIntensity: 80,
+			texture: 'redLaser'
+		},
+		'purple': {
+			speed: 10,
+			color: [1, 0, 1],
+			lightIntensity: 80,
+			texture: 'redLaser'
+		},
+	},
 
 	// explosion constants
 	explosionSparkCount : 400,

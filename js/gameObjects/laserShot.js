@@ -2,10 +2,13 @@
 
 class LaserShot extends GameObject{
 
-	constructor(transform) {
+	constructor(laserId, transform) {
 		super(transform);
 		// setup GLSL program
 		this.programInfo = shaderManager.programInfos['laser'];
+		let configConstants = config.lasers[laserId];
+
+		this.color = configConstants.color;
 
 		let arrays = {
 			// Estos nombres dependen de las variables de los shaders
@@ -16,9 +19,7 @@ class LaserShot extends GameObject{
 		this.bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
 		this.useTexture = true;
-		this.texture = textureManager.textures['laser'];
-
- 		this.color = [ 1, 0, 0, 1 ]; // pure red, maybe add as an attribute?
+		this.texture = textureManager.textures[configConstants.texture];
 
  		// controls movement. Its' overkill, as that motion component has plenty more options,
  		// but at least we are reusing components. Name could change, though.
@@ -29,8 +30,8 @@ class LaserShot extends GameObject{
  		this.frontDirection = null;
 
 		this.light = world.getFreeDynamicLight();
-		this.light.color = config.laserColor;
-		this.light.intensity = 200;
+		this.light.color = this.color;
+		this.light.intensity = configConstants.lightIntensity;
 		this.light.owner = this;
 	}
 
@@ -73,7 +74,7 @@ class LaserShot extends GameObject{
 
 	getUniforms(viewProjectionMatrix, worldMatrix) {
 		let uniforms = {
-			//u_color : this.color,
+			u_laserColor : this.color,
 			u_texture: this.texture
 		};
 		this.addGameObjectUniforms(uniforms, viewProjectionMatrix, worldMatrix);
