@@ -9,6 +9,7 @@ class LaserShootingBehaviorComponent extends BehaviorComponent {
 	update(delta){
 		let inputController = this.owner.inputComponent;
 		if (inputController.isKeyJustPressed(KeyEnum.SPACE)){
+			console.log(this, 'heyyy');
 			// fire a laser!
 			let laserPosition = v3.create(0,0,0);
 			v3.add(this.owner.transform.position, v3.mulScalar(this.owner.getFrontDirection(), 10, laserPosition), laserPosition);

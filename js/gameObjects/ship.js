@@ -7,6 +7,7 @@ class Ship extends Model{
 
 		this.motionComponent = new SpaceShipMotionComponent(this);
 		this.behaviorComponents.push(new FirstPersonFlyBehaviorComponent(this));
+		this.behaviorComponents.push(new LaserShootingBehaviorComponent(this));
 
 		this.baseUpDirection = v3.create(0,1,0);
 		this.upDirection = v3.copy(this.baseUpDirection);
