@@ -5,7 +5,7 @@ class Model extends GameObject{
 	constructor(modelId, textureId, transform, options={}, lodDistances=[-1]) {
 		super(transform);
 
-		if (options.script) {
+		if (options.script != undefined) {
 			if (options.script in config.scripts) {
 				// copy the script because it may be modified
 				let script = deepCopy(config.scripts[options.script]);

@@ -308,7 +308,8 @@ function main() {
 
 	function instanciateModel(modelId, textureId, transform, options){
 		switch (modelId){
-			case "tie":
+			case "tie_fighter":
+			case "tie_interceptor":
 			case "falcon":
 				return new Ship(modelId, textureId, transform, options);
 		}
