@@ -5,7 +5,7 @@ class Camera extends GameObject{
 	constructor(transform, world, frontDirection, viewportDistance) {
 		super(transform);
 
-		// this.topSpeed = 4;
+		// this.topSpeed = 9;
 		this.topSpeed = 1;
 		this.acceleration = 1;
 
