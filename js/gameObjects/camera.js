@@ -5,6 +5,9 @@ class Camera extends GameObject{
 	constructor(transform, world, frontDirection, viewportDistance) {
 		super(transform);
 
+		this.topSpeed = 4;
+		this.acceleration = 1;
+
 		this.motionComponent = new SpaceShipMotionComponent(this);
 		this.behaviorComponents.push(new FirstPersonFlyBehaviorComponent(this));
 

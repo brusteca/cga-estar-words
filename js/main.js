@@ -297,8 +297,8 @@ function main() {
 			rotationMatrix,
 			v3.create(scale.x, scale.y, scale.z)
 		);
-		var script = config.scripts[configModel.script] || [];
-		var model = instanciateModel(configModel.type, texture, transform, script);
+		var options = configModel.options || {};
+		var model = instanciateModel(configModel.type, texture, transform, options);
 
 		model.rotate(degreesToRadians(rotation.x), degreesToRadians(rotation.y), degreesToRadians(rotation.z));
 
@@ -306,16 +306,14 @@ function main() {
 		return model;
 	}
 
-	function instanciateModel(modelId, textureId, transform, script){
+	function instanciateModel(modelId, textureId, transform, options){
 		switch (modelId){
 			case "tie":
 			case "falcon":
-				return new Ship(modelId, textureId, transform, script);
-				break;
-			case "rock_01":
-				return new Model(modelId, textureId, transform, script);
+				return new Ship(modelId, textureId, transform, options);
 		}
-		return null; // breaks the caller, but we will know :)
+		// default case
+		return new Model(modelId, textureId, transform, options);
 	}
 
 }
@@ -366,6 +364,8 @@ document.onkeydown = function(event){
 			if (!captureInput){
 				captureInput = true;
 				capturedCommands = [];
+				console.log(world.getCameraPosition());
+				console.log(world.camera);
 			}else{
 				captureInput = false;
 				downloadFile("script.txt", JSON.stringify(capturedCommands));

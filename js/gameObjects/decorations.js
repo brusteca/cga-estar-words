@@ -66,7 +66,7 @@ class Decorations extends GameObject {
 					v3.create(scale, scale + scaleModY, scale + scaleModZ),
 					this.transform
 				),
-				[]
+				{}
 			))
 		}
 

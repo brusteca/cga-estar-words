@@ -2,12 +2,15 @@
 
 class Ship extends Model{
 
-	constructor(modelId, textureId, transform, script) {
-		super(modelId, textureId, transform, script);
+	constructor(modelId, textureId, transform, options={}, lodDistances=[-1]) {
+		super(modelId, textureId, transform, options, lodDistances);
+
+		this.topSpeed = options.topSpeed || 6;
+		this.acceleration = options.acceleration || 1;
 
 		this.motionComponent = new SpaceShipMotionComponent(this);
 		this.behaviorComponents.push(new FirstPersonFlyBehaviorComponent(this));
-		this.behaviorComponents.push(new LaserShootingBehaviorComponent(this));
+		this.behaviorComponents.push(new LaserShootingBehaviorComponent(this, options.laser));
 
 		this.baseUpDirection = v3.create(0,1,0);
 		this.upDirection = v3.copy(this.baseUpDirection);

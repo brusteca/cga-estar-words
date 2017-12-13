@@ -2,11 +2,17 @@
 
 class Model extends GameObject{
 
-	constructor(modelId, textureId, transform, script, lodDistances=[-1]) {
+	constructor(modelId, textureId, transform, options={}, lodDistances=[-1]) {
 		super(transform);
 
-		if (script != null){
-			this.inputComponent = new ScriptInputComponent(script);
+		if (options.script) {
+			if (options.script in config.scripts) {
+				// copy the script because it may be modified
+				let script = deepCopy(config.scripts[options.script]);
+				this.inputComponent = new ScriptInputComponent(script);
+			} else {
+				throw 'Script ' + options.script + ' not in config.scripts'
+			}
 		}
 
 		// setup GLSL program
