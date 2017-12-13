@@ -218,13 +218,11 @@ var config = {
 
 		// { type : "falcon", transform : { translate : {x : -1720.12, y : 96.92, z : 2199.07}, rotation : { x : 0, y : 90, z : 0}, scale : { x : 0.5, y : 0.5, z : 0.5 }}, options: {script : "patroller_1", laser: 'green', topSpeed: 4, acceleration: 1} },
 
-		// { type : "tie", transform : { translate : {x : 60, y : 0, z : 0}, rotation : { x : 0, y : 90, z : 0} }, options: {script : "tieScript1"} },
-		// { type : "tie", transform : { translate : {x : 60, y : -240, z : 0}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "tieScript2"} },
 		{ type : "tie_interceptor", transform : { translate : {x : 60, y : -240, z : 0}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "chased_2", laser: 'green', topSpeed: 3, acceleration: 1} },
 		{ type : "tie_interceptor", transform : { translate : {x : 40, y : -240, z : -20}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "chased_2", laser: 'green', topSpeed: 3, acceleration: 1} },
 		{ type : "tie_interceptor", transform : { translate : {x : 40, y : -240, z : 20}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "chased_2", laser: 'green', topSpeed: 3, acceleration: 1} },
-		{ type : "tie_interceptor", transform : { translate : {x : 40, y : -140, z : 20}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "chaser_2", laser: 'red', topSpeed: 4, acceleration: 1} },
-		{ type : "tie_interceptor", transform : { translate : { x : 394.078, y : -110.85, z : 0}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "chased_1", laser: 'purple', topSpeed: 6, acceleration: 1} },
+		{ type : "tie_fighter", transform : { translate : {x : 40, y : -140, z : 20}, rotation : { x : 0, y : 90, z : 0}, scale: {x: 16, y: 16, z: 16}}, options: {script : "chaser_2", laser: 'red', topSpeed: 4, acceleration: 1} },
+		{ type : "tie_fighter", transform : { translate : { x : 394.078, y : -110.85, z : 0}, rotation : { x : 0, y : 90, z : 0}, scale: {x: 16, y: 16, z: 16}}, options: {script : "chased_1", laser: 'purple', topSpeed: 6, acceleration: 1} },
 		{ type : "tie_interceptor", transform : { translate : { x : 410.078, y : -110.85, z : 30}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "chased_1", laser: 'purple', topSpeed: 6, acceleration: 1} },
 		{ type : "tie_interceptor", transform : { translate : { x : 454.078, y : -110.85, z : 0}, rotation : { x : 0, y : 90, z : 0}}, options: {script : "chaser_1", laser: 'purple', topSpeed: 6, acceleration: 1} }
 		,
