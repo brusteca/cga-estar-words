@@ -29,12 +29,16 @@ class AABBColliderComponent extends ColliderComponent{
 			}
 		}else if (collider instanceof Float32Array && collider.length == 3){
 			// point
-			if (this.x1 < collider[0] &&
-				this.x2 > collider[0] &&
-				this.y1 < collider[1] &&
-				this.y2 > collider[1] &&
-				this.z1 < collider[2] &&
-				this.z2 > collider[2]){
+			// this shouldn't be here, but no time
+			let lowerLeft = m4.transformPoint(this.owner.transform.transformMatrix, v3.create(this.x1, this.y1, this.z1));
+			let upperRight = m4.transformPoint(this.owner.transform.transformMatrix, v3.create(this.x2, this.y2, this.z2));
+			
+			if (lowerLeft[0] < collider[0] &&
+				upperRight[0] > collider[0] &&
+				lowerLeft[1] < collider[1] &&
+				upperRight[1] > collider[1] &&
+				lowerLeft[2] < collider[2] &&
+				upperRight[2] > collider[2]){
 				collides = true;
 			}
 		}
