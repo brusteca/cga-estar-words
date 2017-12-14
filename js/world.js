@@ -47,7 +47,7 @@ class World {
 	}
 
 	update(delta_seconds, gameTime){
-		this.physics.step(delta_seconds);
+		// this.physics.step(delta_seconds);
 		this.events.update(delta_seconds);
 
 		// only lights that don't have owner are updated here
