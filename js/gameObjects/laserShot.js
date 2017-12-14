@@ -45,6 +45,7 @@ class LaserShot extends GameObject{
 		let position = this.transform.position;
 		let terrainHeight = world.terrain.getHeightAt(position);
 		// collision against terrain or the shot is outside the terrain
+		let explotion = false;
 		if (position[1] <= terrainHeight || terrainHeight == -Number.MAX_SAFE_INTEGER) {
 			world.removeGameObject(this);
 			// if I still have control over my light
@@ -54,12 +55,25 @@ class LaserShot extends GameObject{
 			}
 			// make an explosion if the shot hit the terrain
 			if (position[1] <= terrainHeight) {
-				let explosionPosition = v3.copy(position);
-				explosionPosition[1] = terrainHeight + 10;
-				let explosion = new Explosion(new Transform(explosionPosition));
-				world.gameObjects.push(explosion);
+				explotion = true;
 			}
 
+		}else{
+			// check collision against the rocks
+			let collisionTargets = world.grid.getObjectsInPoint(position[0], position[1], position[2]);
+			for (var i = 0; i < collisionTargets.length; i++){
+				if (collisionTargets[i].collider.collidesWith(position)){
+					explotion = true;
+					console.log("hit a rock!!");
+					break;
+				}
+			}
+		}
+		if (explotion){
+			let explosionPosition = v3.copy(position);
+			explosionPosition[1] = terrainHeight + 10;
+			let explosion = new Explosion(new Transform(explosionPosition));
+			world.gameObjects.push(explosion);
 		}
 	}
 

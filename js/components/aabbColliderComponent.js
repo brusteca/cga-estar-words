@@ -27,6 +27,16 @@ class AABBColliderComponent extends ColliderComponent{
 				
 				collides = true;
 			}
+		}else if (collider instanceof Float32Array && collider.length == 3){
+			// point
+			if (this.x1 < collider[0] &&
+				this.x2 > collider[0] &&
+				this.y1 < collider[1] &&
+				this.y2 > collider[1] &&
+				this.z1 < collider[2] &&
+				this.z2 > collider[2]){
+				collides = true;
+			}
 		}
 		return collides;
 	}

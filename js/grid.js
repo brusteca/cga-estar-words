@@ -38,18 +38,21 @@ class AxisAlignedGrid {
 		// calculate the indexes which span
 		var minX = gameObject.collider.getMinX();
 		var maxX = gameObject.collider.getMaxX();
-		var xMinIndex = this.fromXToIndex(minX);
-		var xMaxIndex = this.fromXToIndex(maxX);
-
 		var minY = gameObject.collider.getMinY();
 		var maxY = gameObject.collider.getMaxY();
-		var yMinIndex = this.fromYToIndex(minY);
-		var yMaxIndex = this.fromYToIndex(maxY);
-
 		var minZ = gameObject.collider.getMinZ();
 		var maxZ = gameObject.collider.getMaxZ();
-		var zMinIndex = this.fromZToIndex(minZ); 
-		var zMaxIndex = this.fromZToIndex(maxZ);
+
+		// rocks do not have a rotation, have they?
+		var transformedLowerLeft = m4.transformPoint(gameObject.transform.transformMatrix, v3.create(minX, minY, minZ));
+		var transformedUpperRight = m4.transformPoint(gameObject.transform.transformMatrix, v3.create(maxX, maxY, maxZ));
+
+		var xMinIndex = this.fromXToIndex(transformedLowerLeft[0]);
+		var xMaxIndex = this.fromXToIndex(transformedUpperRight[0]);
+		var yMinIndex = this.fromYToIndex(transformedLowerLeft[1]);
+		var yMaxIndex = this.fromYToIndex(transformedUpperRight[1]);
+		var zMinIndex = this.fromZToIndex(transformedLowerLeft[2]); 
+		var zMaxIndex = this.fromZToIndex(transformedUpperRight[2]);
 
 		for (var i = xMinIndex; i <= xMaxIndex; i++){
 			for (var j = yMinIndex; j <= yMaxIndex; j++){
