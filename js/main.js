@@ -2,6 +2,7 @@
 
 const canvas = document.getElementById('glCanvas');
 const gl = canvas.getContext('webgl', { alpha : false, premultipliedAlpha : false });
+let depthTextureExtension = gl.getExtension('WEBGL_depth_texture');
 
 const v3 = twgl.v3;
 const m3 = twgl.m3;
@@ -9,8 +10,8 @@ const m4 = twgl.m4;
 
 const MS_PER_UPDATE = 1000 / 60;
 
-let cameraAngleRadians = degreesToRadians(0);
 let fieldOfViewRadians = degreesToRadians(60);
+let fieldOfViewRadiansShadowMap = degreesToRadians(90);
 
 let modelManager = new ModelManager();
 let textureManager = new TextureManager();
@@ -27,6 +28,8 @@ let gameTime = 0;
 
 let STATIC_LIGHT_COUNT = 0;
 let DYNAMIC_LIGHT_COUNT = 0;
+
+let SHADOW_MAP_COUNT_PER_LIGHT = 4;
 
 function main() {
 
@@ -55,9 +58,9 @@ function main() {
 
 	world = new World(config.globalEvents, config.camera.position);
 
-	let numLights = 16;
+	let numLights = 8; //8;
 	STATIC_LIGHT_COUNT = 3;
-	DYNAMIC_LIGHT_COUNT = numLights - STATIC_LIGHT_COUNT;
+	DYNAMIC_LIGHT_COUNT = 2;//numLights - STATIC_LIGHT_COUNT;
 	let pointLightPositions = [
 		3200, 1600, -40,
 		-30, 60, -40,
@@ -131,7 +134,20 @@ function main() {
 			],
 			pointLightIntensities[ii/3]
 		));
+
+		if (ii < STATIC_LIGHT_COUNT * 3 || ii > (STATIC_LIGHT_COUNT + 1) * 3)
+			continue;
+
+		for (var j = 0; j < SHADOW_MAP_COUNT_PER_LIGHT; j++){
+
+			let smap = new ShadowMap();
+			world.shadowMaps.push(smap);
+			world.shadowMapUses.push(smap.useShadowMap);
+			world.shadowMapTextures.push(smap.shadowMapTexture);
+			world.shadowMapMVPLightMatrixes.push(smap.lightViewProjectionMatrix);
+		}	
 	}
+
 
 	//world.cameraPosition = config.camera.position || [0,0,0];
 	/*
@@ -170,6 +186,17 @@ function main() {
 		v3.create(10, 350, 10)
 	)));
 
+	let terrainMinX = -images.heightmap.width / 2;
+	let terrainWidth = images.heightmap.width;
+	let gridResolutionX = 100;
+	let terrainMinZ = -images.heightmap.height / 2;
+	let terrainHeight = images.heightmap.height;
+	let gridResolutionZ = 100;
+
+	world.grid = new AxisAlignedGrid(terrainMinX, gridResolutionX, Math.ceil(terrainWidth / gridResolutionX)
+									, 0, 1, 1000, 
+									terrainMinZ, gridResolutionZ, Math.ceil(terrainHeight / gridResolutionZ));
+
 	/*
 	var fox = new Model("resources/models/x-wing.obj", "resources/textures/fox_texture.png", new Transform(
 		v3.create(-300,-70,300),
@@ -185,8 +212,12 @@ function main() {
 		world.gameObjects.push(model);
 	}
 
-	world.gameObjects.push(new Decorations(new Transform()));
+	var decorations = new Decorations(new Transform());
+	world.gameObjects.push(decorations);
 
+	for (var i = 0; i < decorations.rocks.length; i++){
+		world.grid.insertObject(decorations.rocks[i]);
+	}
 	/*
 	var milleniumFalcon = new Model("resources/models/millenium-falcon.obj", "resources/textures/falcon.jpg", new Transform(
 		v3.create(-600,-50,600),
@@ -194,6 +225,15 @@ function main() {
 		v3.create(0.2, 0.2, 0.2)
 	));
 	world.gameObjects.push(milleniumFalcon);
+	*/
+
+	// framebuffer for shadowmapping - Native WebGL
+	/*
+	fbo = gl.createFramebuffer();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); 
+	// attach the texture as the first color attachment
+	const attachmentPoint = gl.DEPTH_ATTACHMENT;
+	gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, shadowMapTexture, shadowMapTextureLevel);
 	*/
 
 	requestAnimationFrame(initLoop)
@@ -217,6 +257,8 @@ function main() {
 					update(MS_PER_UPDATE);
 					lag -= MS_PER_UPDATE;
 				}
+
+			    calculateShadowMap();
 			    draw();
 			}
 
@@ -225,55 +267,78 @@ function main() {
 
 	}
 
-
-
 	function draw() {
+		let cameraMatrix, viewMatrix, viewProjectionMatrix;
+
 		twgl.resizeCanvasToDisplaySize(gl.canvas);
 
-	    // Tell WebGL how to convert from clip space to pixels
-	    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-	    // Clear the canvas AND the depth buffer.
-	    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	    // Compute the projection matrix
-	    var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-	    var zNear = 1;
-	    var zFar = 2000;
-	    var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-
-		let radius = 250;
-	    // Compute the position of the first F
-	    var centerPosition = [0, 0, 0];
-
-	    // Use matrix math to compute a position on a circle where
-	    // the camera is
-	    var cameraMatrix = m4.rotationY(cameraAngleRadians);
-	    cameraMatrix = m4.translate(cameraMatrix, v3.create(0, 0, radius * 1.5));
-
-	    // Get the camera's postion from the matrix we computed
-	    var cameraPosition = [
-	      cameraMatrix[12],
-	      cameraMatrix[13],
-	      cameraMatrix[14],
-	    ];
-
-	    var up = [0, 1, 0];
+		// Tell WebGL how to convert from clip space to pixels
+		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
 	    // Compute the camera's matrix using look at.
-	    //var cameraMatrix = m4.lookAt(cameraPosition, centerPosition, up);
-		var cameraMatrix = m4.lookAt(world.getCameraPosition(), world.getViewportCenter(), world.getViewportUpVector());
-
+		cameraMatrix = m4.lookAt(world.getCameraPosition(), world.getViewportCenter(), world.getViewportUpVector());
 	    // Make a view matrix from the camera matrix
-	    var viewMatrix = m4.inverse(cameraMatrix);
-
+	    viewMatrix = m4.inverse(cameraMatrix);
 	    // Compute a view projection matrix
-	    //var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
-	    var viewProjectionMatrix = m4.multiply(world.getProjectionMatrix(), viewMatrix);
+	    var aspectRatio = gl.canvas.clientWidth / gl.canvas.clientHeight;
+	    viewProjectionMatrix = m4.multiply(world.getProjectionMatrix(aspectRatio, fieldOfViewRadians), viewMatrix);
+
+		// Clear the canvas AND the depth buffer.
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		//if (useShadowMap) // this si a cool hack to render the frustum that the light 'sees'. Uncommenting recommended
+		//	viewProjectionMatrix = lightViewProjectionMatrix;
 
 		for (let ii = 0, len = world.gameObjects.length; ii < len; ++ii) {
-			world.gameObjects[ii].draw(viewProjectionMatrix);
+			world.gameObjects[ii].draw(viewProjectionMatrix, null);
 		}
+	}
+
+	function calculateShadowMap() {
+		
+		twgl.resizeCanvasToDisplaySize(gl.canvas); // not sure if needed 
+
+		var DYNAMIC_LIGHT_WITH_SHADOWS = 2;
+		for (let i = 0; i < DYNAMIC_LIGHT_WITH_SHADOWS; i++){
+			let light = world.getDynamicLight(i);
+
+			for (var j = 0; j < SHADOW_MAP_COUNT_PER_LIGHT; j++){
+				let smap = world.shadowMaps[i * SHADOW_MAP_COUNT_PER_LIGHT + j];
+				if (light.owner == null){ 
+					smap.useShadowMap = false;
+				}else{
+					// it's a laser light, has to have a shadow map
+					gl.bindFramebuffer(gl.FRAMEBUFFER, smap.fbo);
+					gl.viewport(0, 0, shadowMapTextureWidth, shadowMapTextureHeight);
+					gl.clear(gl.DEPTH_BUFFER_BIT);
+
+					let lightDirection = null;
+					switch(j){
+						case 0: lightDirection = v3.create( 0, 0, 1); break;
+						case 1: lightDirection = v3.create( 0, 0,-1); break;
+						case 2: lightDirection = v3.create( 1, 0, 0); break;
+						case 3: lightDirection = v3.create(-1, 0, 0); break;
+					}
+					smap.lightCameraMatrix = m4.lookAt(light.transform.getWorldPosition(), v3.add(light.transform.getWorldPosition(), lightDirection), up);
+				    // Make a view matrix from the camera matrix
+				    smap.lightViewMatrix = m4.inverse(smap.lightCameraMatrix);
+				    // Compute a view projection matrix
+				    var aspectRatio = shadowMapTextureWidth / shadowMapTextureHeight;
+				   	smap.lightViewProjectionMatrix = m4.multiply(world.getProjectionMatrix(aspectRatio, fieldOfViewRadiansShadowMap), smap.lightViewMatrix);
+
+					for (let ii = 0, len = world.gameObjects.length; ii < len; ++ii) {
+						world.gameObjects[ii].calculateShadowMap(smap.lightViewProjectionMatrix);
+					}
+
+					smap.useShadowMap = true;
+				}				
+			}
+		}
+
+		world.setShadowMapsVariables();
+	
 	}
 
 	function update(ms){

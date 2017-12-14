@@ -80,7 +80,13 @@ class Decorations extends GameObject {
 
 	draw(viewProjectionMatrix, worldMatrix=null) {
 		for (let ii = 0, len = this.rocks.length; ii < len; ++ii) {
-			this.rocks[ii].draw(viewProjectionMatrix, worldMatrix=null)
+			this.rocks[ii].draw(viewProjectionMatrix, worldMatrix);
+		}
+	}
+
+	calculateShadowMap(lightViewProjectionMatrix){
+		for (let ii = 0, len = this.rocks.length; ii < len; ++ii) {
+			this.rocks[ii].calculateShadowMap(lightViewProjectionMatrix);
 		}
 	}
 }

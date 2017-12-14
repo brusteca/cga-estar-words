@@ -47,8 +47,8 @@ class Explosion extends GameObject{
 		// if I still have control over my light
 		if (this.light.owner == this) {
 			this.light.update();
-			this.light.transform.position[1] += 10;
-			this.light.transform.calculateTransformMatrix();
+			//this.light.transform.position[1] += 10; some terrible artifacts happened due to this
+			//this.light.transform.calculateTransformMatrix();
 		}
 		for (var i = 0; i < this.particles.length; i++){
 			// particle definition below in this file
@@ -82,6 +82,10 @@ class Explosion extends GameObject{
 			// particle definition below in this file
 			this.particles[i].draw(viewProjectionMatrix, worldMatrix);
 		}
+	}
+
+	calculateShadowMap(lightViewProjectionMatrix){
+		// don't project shadows
 	}
 
 	removeParticle(particle){

@@ -55,7 +55,7 @@ class LaserShot extends GameObject{
 			// make an explosion if the shot hit the terrain
 			if (position[1] <= terrainHeight) {
 				let explosionPosition = v3.copy(position);
-				explosionPosition[1] = terrainHeight;
+				explosionPosition[1] = terrainHeight + 10;
 				let explosion = new Explosion(new Transform(explosionPosition));
 				world.gameObjects.push(explosion);
 			}

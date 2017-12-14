@@ -30,6 +30,10 @@ class Model extends GameObject{
 		//for memory savings
 		this.vaux1 = v3.create();
 		this.vaux2 = v3.create();
+
+		let aabbInfo = modelManager.aabbInfo[modelId];
+		this.collider = new AABBColliderComponent(this, aabbInfo.minX, aabbInfo.maxX, aabbInfo.minY, aabbInfo.maxY, aabbInfo.minZ, aabbInfo.maxZ);
+
 	};
 
 	update(delta) {

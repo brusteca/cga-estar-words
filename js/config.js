@@ -170,7 +170,11 @@ var config = {
 			laserExplosionParticle : {
 				vertex: "3d-vertex-shader-laser-explosion-particle",
 				fragment: "3d-fragment-shader-laser-explosion-particle"
-			}
+			},
+			shadowMap : {
+				vertex: "3d-vertex-shader-shadow-map",
+				fragment: "3d-fragment-shader-shadow-map"
+			},
 		}
 	},
 

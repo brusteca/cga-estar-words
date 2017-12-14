@@ -57,6 +57,10 @@ class Camera extends GameObject{
 		// override gameObject draw function so it actually doesn't draw anything
 	}
 
+	calculateShadowMap(){
+		// override shadowMap function so it actually doesn't do anything
+	}
+
 	getFrontDirection(){
 		return this.frontDirection;
 	}

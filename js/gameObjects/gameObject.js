@@ -29,7 +29,7 @@ class GameObject {
 
 		// here you set all the uniforms for the shaders
 		var uniforms = this.getUniforms(viewProjectionMatrix, worldMatrix);
-		twgl.setUniforms(this.programInfo, uniforms)
+		twgl.setUniforms(this.programInfo, uniforms);
 
 		// Draw the geometry.
 		let primitiveType = gl.TRIANGLES;
@@ -37,6 +37,27 @@ class GameObject {
 		gl.drawArrays(primitiveType, offset, this.bufferInfo.numElements);
 
 		this.setPostDrawGLProperties();
+	}
+
+	calculateShadowMap(lightViewProjectionMatrix){
+		let shadowMapProgram = shaderManager.programInfos['shadowMap'];
+		// Tell it to use our program (pair of shaders)
+		gl.useProgram(shadowMapProgram.program);
+
+		let shadowMapBufferInfo = { numElements : this.bufferInfo.numElements, attribs :  { a_position : this.bufferInfo.attribs.a_position} };
+		twgl.setBuffersAndAttributes(gl, shadowMapProgram, shadowMapBufferInfo);
+
+		// this one transforms to clip coordinates (3 transformations)
+		let MVPMatrix = m4.multiply(
+			lightViewProjectionMatrix, this.transform.transformMatrix);
+
+		var uniforms = { u_worldViewProjection : MVPMatrix };
+		twgl.setUniforms(shadowMapProgram, uniforms);
+
+		// Draw the geometry.
+		let primitiveType = gl.TRIANGLES;
+		let offset = 0;
+		gl.drawArrays(primitiveType, offset, shadowMapBufferInfo.numElements);
 	}
 
 	setPreDrawGLProperties(){
@@ -66,13 +87,16 @@ class GameObject {
 		uniforms.u_worldViewProjection = currentViewMatrix;
 	}
 
-	getUniforms(viewProjectionMatrix, worldMatrix){
+	getUniforms(viewProjectionMatrix, worldMatrix, lightViewProjectionMatrix){
 		let uniforms = {
 			u_reverseLightDirection: v3.normalize([0.5, 0.7, 1]),
 			u_cameraPosition: world.getCameraPosition(),
 			u_pointLightPositions: world.pointLightPositions,
 			u_pointLightColors: world.pointLightColors,
 			u_pointLightIntensities: world.pointLightIntensities,
+			u_shadowMapUses : world.shadowMapUses,
+			u_shadowMapTextures : world.shadowMapTextures,
+			u_shadowMapMVPLightMatrixes : world.shadowMapMVPLightMatrixes,
 			u_texture: this.texture,
 			u_useTexture : (this.texture != null)
 		};

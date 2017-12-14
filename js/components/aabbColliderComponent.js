@@ -30,4 +30,28 @@ class AABBColliderComponent extends ColliderComponent{
 		}
 		return collides;
 	}
+
+	getMinX(){
+		return this.x1;
+	}
+
+	getMaxX(){
+		return this.x2;
+	}
+
+	getMinY(){
+		return this.y1;
+	}
+
+	getMaxY(){
+		return this.y2;
+	}
+
+	getMinZ(){
+		return this.z1;
+	}
+
+	getMaxZ(){
+		return this.z2;
+	}
 }

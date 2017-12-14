@@ -7,6 +7,7 @@ class World {
 
 		this.gameObjects = [];
 		this.pointLights = [];
+
 		this.events = new BehaviorComponent(instructions, this);
 
 		this.camera = new Camera(new Transform(v3.create(cameraPosition.x,cameraPosition.y,cameraPosition.z)), this, v3.create(-1, 0, 0), 10);
@@ -19,11 +20,19 @@ class World {
 
 		// index in the array of the next free light
 		this.availableLight = 0;
+
+		this.shadowMaps = [];
+		this.shadowMapTextures = [];
+		this.shadowMapUses = [];
+		this.shadowMapMVPLightMatrixes = [];
+
+		this.grid = null; // set in main.js
 	}
 
 	setTerrain(terrain) {
 		this.terrain = terrain;
 		this.gameObjects.push(terrain);
+
 	}
 
 	setLightPositionsAndColors() {
@@ -44,6 +53,17 @@ class World {
 				pointLight => pointLight.getIntensity()
 			)
 		);
+	}
+
+	setShadowMapsVariables(){
+		this.shadowMapMVPLightMatrixes = [];
+		for(var i = 0; i < this.shadowMaps.length; i++){
+			var smap = this.shadowMaps[i];
+			this.shadowMapUses[i] = smap.useShadowMap;
+			for (var j = 0; j < smap.lightViewProjectionMatrix.length; j++){
+				this.shadowMapMVPLightMatrixes.push(smap.lightViewProjectionMatrix[j]);				
+			}
+		}
 	}
 
 	update(delta_seconds, gameTime){
@@ -84,9 +104,8 @@ class World {
 	    return this.camera.viewportUp;
 	}
 
-	getProjectionMatrix(){
+	getProjectionMatrix(aspect, fieldOfViewRadians){
 	    // Compute the projection matrix
-	    var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 	    var zNear = 1;
 	    var zFar = 20000;
 	    var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
@@ -98,6 +117,10 @@ class World {
 		var pointLight = this.pointLights[this.availableLight + STATIC_LIGHT_COUNT]; // first 3 light are fixed lights
 		this.availableLight = (this.availableLight + 1) % DYNAMIC_LIGHT_COUNT;
 		return pointLight;
+	}
+
+	getDynamicLight(dynamicIndex){
+		return this.pointLights[STATIC_LIGHT_COUNT + dynamicIndex];
 	}
 
 	removeGameObject(gameObject){

@@ -6,9 +6,12 @@ class ModelManager {
 	constructor(){
 		this.lodBufferInfos = {};
 		this.lodDistances = {};
+
+		this.aabbInfo = {};
 	}
 
 	loadModelBufferInfo(modelId, options, ii) {
+		let modelManager = this;
 		let modelPath = MODEL_BASE_PATH + options.lod_files[ii].file;
 		return new Promise((resolve, reject) => {
 			// new model, load it and store it
@@ -40,6 +43,42 @@ class ModelManager {
 						a_normal: {numComponents: 3, data: normals},
 						a_texcoord: {numComponents: 2, data: texels}
 					};
+
+					// this shouldn't be here, but it's the only time where I get to access the verts
+					let minX = Infinity;
+					let maxX = 0;
+					let minY = Infinity;
+					let maxY = 0;
+					let minZ = Infinity;
+					let maxZ = 0;
+					 
+					for (var i = 0; i < verts.length; i++){
+						if ((i % 3) == 0){
+							if (verts[i] < minX){
+								minX = verts[i];
+							}
+							if (verts[i] > maxX){
+								maxX = verts[i];
+							}
+						}else if ((i % 3) == 1){
+							if (verts[i] < minY){
+								minY = verts[i];
+							}
+							if (verts[i] > maxY){
+								maxY = verts[i];
+							}
+						}else{
+							if (verts[i] < minZ){
+								minZ = verts[i];
+							}
+							if (verts[i] > maxZ){
+								maxZ = verts[i];
+							}
+						}
+					}
+
+					modelManager.pushAABBInfo(modelId, minX, maxX, minY, maxY, minZ, maxZ);
+
 					let bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 					resolve(bufferInfo);
 				});
@@ -80,4 +119,28 @@ class ModelManager {
 		});
 	}
 
+	pushAABBInfo(modelId, minX, maxX, minY, maxY, minZ, maxZ){
+		if (this.aabbInfo[modelId] == undefined){
+			this.aabbInfo[modelId] = { minX : minX, maxX : maxX, minY : minY, maxY : maxY, minZ : minZ, maxZ : maxZ };
+		}else{
+			if (minX < this.aabbInfo[modelId].minX){
+				this.aabbInfo[modelId].minX = minX;
+			}
+			if (maxX > this.aabbInfo[modelId].maxX){
+				this.aabbInfo[modelId].maxX = maxX;
+			}
+			if (minY < this.aabbInfo[modelId].minY){
+				this.aabbInfo[modelId].minY = minY;
+			}
+			if (maxY > this.aabbInfo[modelId].maxY){
+				this.aabbInfo[modelId].maxY = maxY;
+			}
+			if (minZ < this.aabbInfo[modelId].minZ){
+				this.aabbInfo[modelId].minZ = minZ;
+			}
+			if (maxZ > this.aabbInfo[modelId].maxZ){
+				this.aabbInfo[modelId].maxZ = maxZ;
+			}
+		}
+	}
 }
