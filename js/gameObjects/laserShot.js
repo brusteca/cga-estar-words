@@ -64,7 +64,6 @@ class LaserShot extends GameObject{
 			for (var i = 0; i < collisionTargets.length; i++){
 				if (collisionTargets[i].collider.collidesWith(position)){
 					explotion = true;
-					console.log("hit a rock!!");
 					break;
 				}
 			}
