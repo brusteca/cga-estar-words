@@ -33,6 +33,8 @@ let SHADOW_MAP_COUNT_PER_LIGHT = 4;
 
 function main() {
 
+	playSound("lightsaber");
+
 	document.getElementById('glCanvas').style.display = "block";
 	document.getElementById('2dCanvas').style.display = "none";
 
@@ -503,6 +505,7 @@ function preloader(){
 }
 
 let images = [];
+let sounds = [];
 let assetCount = 0;
 let percentLoaded = 0;
 let loadingImages = true;
@@ -522,6 +525,11 @@ function loadResources(initGame){
 	for (program in config.resources.shaders) {
 		assetCount++;
 	}
+	for (let snd in config.resources.sounds){
+		sounds[snd] = {};
+		sounds[snd].sound = new Audio(config.resources.sounds[snd]);
+	}
+
 	for (img in config.resources.textures){
 		images[img] = document.createElement('img');
 		// support for options object in config
@@ -622,4 +630,14 @@ function loadResources(initGame){
 		sounds[snd].sound = new Audio(soundSources[snd]);
 	}*/
 	requestAnimationFrame(preloader);
+}
+
+function playSound(soundName, volume=1){
+	if (config.soundEnabled){
+		var sound = sounds[soundName].sound;
+		sound.volume = clamp(volume, 0, 1);
+		sound.pause();
+		sound.currentTime = 0;
+	  	sound.play();		
+	}
 }

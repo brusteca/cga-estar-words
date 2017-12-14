@@ -25,6 +25,9 @@ class LaserShootingBehaviorComponent extends BehaviorComponent {
 			v3.normalize(laserShot.frontDirection, laserShot.frontDirection);
 			laserShot.motionComponent.speed = config.lasers[this.laserId].speed;
 			world.gameObjects.push(laserShot);
+
+			var cameraDistance = v3.distance(laserTransform.position, world.camera.transform.position);
+			playSound("laserblast", 20 / cameraDistance);
 		}
 
 	}

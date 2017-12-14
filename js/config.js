@@ -202,6 +202,10 @@ var config = {
 				vertex: "3d-vertex-shader-shadow-map",
 				fragment: "3d-fragment-shader-shadow-map"
 			},
+		},
+		sounds: {
+			lightsaber : "sounds/lightsaber.mp3",
+			laserblast : "sounds/laserblast.mp3"	
 		}
 	},
 
@@ -282,5 +286,8 @@ var config = {
 
 	// explosion constants
 	explosionSparkCount : 400,
-	dirtToSparkRatio : 0.6
+	dirtToSparkRatio : 0.6,
+
+	
+	soundEnabled : true
 }
