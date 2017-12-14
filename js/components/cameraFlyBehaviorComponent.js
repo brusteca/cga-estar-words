@@ -1,15 +1,12 @@
 'use strict';
 
-class FirstPersonFlyBehaviorComponent extends BehaviorComponent {
+class CameraFlyBehaviorComponent extends BehaviorComponent {
 
 	constructor(owner) {
 		super(owner);
 
-		if (this.owner.acceleration == undefined) {
-			throw 'Owner of FirstPersonFlyBehaviorComponent must have acceleration!'
-		}
 		if (this.owner.topSpeed == undefined) {
-			throw 'Owner of FirstPersonFlyBehaviorComponent must have topSpeed!'
+			throw 'Owner of CameraFlyBehaviorComponent must have topSpeed!'
 		}
 	}
 
@@ -17,26 +14,12 @@ class FirstPersonFlyBehaviorComponent extends BehaviorComponent {
 		var inputController = this.owner.inputComponent;
 		// accelerate
 		if (inputController.isKeyDown(KeyEnum.W)){
-			this.owner.motionComponent.setAcceleration(this.owner.acceleration);
+			this.owner.motionComponent.setSpeed(this.owner.topSpeed);
 		// go backwards
 		} else if (inputController.isKeyDown(KeyEnum.S)){
-			this.owner.motionComponent.setAcceleration(-this.owner.acceleration);
-		// brake
-		} else if (inputController.isKeyDown(KeyEnum.B)){
-			if (Math.abs(this.owner.motionComponent.speed) < 0.1) {
-				this.owner.motionComponent.setSpeed(0);
-				this.owner.motionComponent.setAcceleration(0);
-			} else {
-				this.owner.motionComponent.setAcceleration((this.owner.motionComponent.speed > 0? -1: 1) *  this.owner.acceleration);
-			}
+			this.owner.motionComponent.setSpeed(-this.owner.topSpeed);
 		} else  {
-			this.owner.motionComponent.setAcceleration(0);
-		}
-		let newSpeed = this.owner.motionComponent.speed + (delta * this.owner.motionComponent.acceleration);
-		if (newSpeed > this.owner.topSpeed) {
-			this.owner.motionComponent.setSpeed(this.owner.topSpeed)
-		} else {
-			this.owner.motionComponent.setSpeed(newSpeed)
+			this.owner.motionComponent.setSpeed(0);
 		}
 
 		var rotationSpeed = 0;

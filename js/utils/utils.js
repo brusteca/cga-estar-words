@@ -158,7 +158,7 @@ KeyEnum = {
 	A : 65,
 	B : 66,
 	C : 67,
-	D : 68, 
+	D : 68,
 	E : 69,
 	F : 70,
 	O : 79,
@@ -167,7 +167,7 @@ KeyEnum = {
 	R : 82,
 	S : 83,
 	W : 87,
-	ENTER: 13, 
+	ENTER: 13,
 	CTRL : 17,
 	ALT : 18,
 	ESC : 27
@@ -177,7 +177,7 @@ function constraintFontToWidth(context, text, fontFamily, startSize, width){
 	context.font = startSize + "px " + fontFamily;
 	while(context.measureText(text).width >= width){
 		startSize--;
-		context.font = startSize + "px " + fontFamily;	
+		context.font = startSize + "px " + fontFamily;
 	}
 	return startSize;
 }
@@ -926,4 +926,17 @@ function getEasing(fraction, type){
 			break;
 	}
 	return result;
+}
+
+
+function deepCopy(objWithoutFunctions) {
+	return JSON.parse(JSON.stringify(objWithoutFunctions));
+}
+
+function reTimeScript(script) {
+	let startTime = script[0].time;
+	return JSON.stringify(script.map(keypress => {
+		keypress.time -= startTime;
+		return keypress;
+	}))
 }

@@ -34,6 +34,10 @@ class SpaceShipMotionComponent extends MotionComponent{
 		this.speed = speed;
 	}
 
+	setAcceleration(acceleration) {
+		this.acceleration = acceleration;
+	}
+
 	setAngularSpeed(xSpeed, ySpeed, zSpeed){
 		this.angularSpeedDirection[0] = xSpeed;
 		this.angularSpeedDirection[1] = ySpeed;

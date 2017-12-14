@@ -5,8 +5,13 @@ class Camera extends GameObject{
 	constructor(transform, world, frontDirection, viewportDistance) {
 		super(transform);
 
+		// this.topSpeed = 9;
+		this.topSpeed = 1;
+		this.acceleration = 1;
+
 		this.motionComponent = new SpaceShipMotionComponent(this);
-		this.behaviorComponents.push(new FirstPersonFlyBehaviorComponent(this));
+		// this.behaviorComponents.push(new FirstPersonFlyBehaviorComponent(this));
+		this.behaviorComponents.push(new CameraFlyBehaviorComponent(this));
 
 		// ability to shoot lasers
 		this.behaviorComponents.push(new LaserShootingBehaviorComponent(this));
